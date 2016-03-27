@@ -26,6 +26,7 @@ namespace LiteDB.Tests
 
     public class Product
     {
+        public Product TProduct { get; set; }
         public int ProductId { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
@@ -74,22 +75,25 @@ namespace LiteDB.Tests
         {
             using (var db = new IncludeDatabase())
             {
-                var customer = new Customer {Name = "John Doe"};
+                var customer = new Customer { Name = "John Doe" };
 
-                var product1 = new Product {Name = "TV", Price = 800};
-                var product2 = new Product {Name = "DVD", Price = 200};
-
+                var product1 = new Product { Name = "TV", Price = 800 };
+                var product2 = new Product { Name = "DVD", Price = 200, TProduct = product1 };
+                var product3 = new Product { Name = "CTV", Price = 340, TProduct = product2 };
+                var product4 = new Product { Name = "CTV4", Price = 340, TProduct = product3 };
+                var product5 = new Product { Name = "CTV5", Price = 340, TProduct = product4 };
+                var product6 = new Product { Name = "CTV6", Price = 340, TProduct = product5 };
                 // insert ref documents
                 db.Customers.Insert(customer);
-                db.Products.Insert(new[] {product1, product2});
+                db.Products.Insert(new[] { product1, product2, product3, product4, product5, product6 });
 
                 var order = new Order
                 {
                     Customer = customer,
                     CustomerNull = null,
-                    Products = new List<Product> {product1, product2},
-                    ProductArray = new[] {product1},
-                    ProductColl = new List<Product> {product2},
+                    Products = new List<Product> { product1, product2, product3 },
+                    ProductArray = new[] { product1, product6 },
+                    ProductColl = new List<Product> { product2 },
                     ProductEmpty = new List<Product>(),
                     ProductsNull = null
                 };

@@ -40,8 +40,7 @@ namespace LiteDB
                         col._includes.AddRange(_includes);
                         for (var i = 0; i < array.Count; i++)
                         {
-                            var obj = col.FindById(array[i].AsDocument["$id"]);
-                            array[i] = obj;
+                            array[i] = col.FindById(array[i].AsDocument["$id"]);
                         }
                     }
                     else
@@ -50,8 +49,7 @@ namespace LiteDB
                         var doc = value.AsDocument;
                         var col = new LiteCollection<BsonDocument>(doc["$ref"], _engine, _mapper, _log);
                         col._includes.AddRange(_includes);
-                        var obj = col.FindById(doc["$id"]);
-                        bson.Set(path, obj);
+                        bson.Set(path, col.FindById(doc["$id"]));
                     }
                 };
             }

@@ -65,7 +65,8 @@ namespace LiteDB
         /// </summary>
         public IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int skip = 0, int limit = int.MaxValue)
         {
-            return Find(_visitor.Visit(predicate), skip, limit);
+            var a = _visitor.Visit(predicate);
+            return Find(a, skip, limit);
         }
 
         #endregion Find

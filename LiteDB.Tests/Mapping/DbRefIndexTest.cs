@@ -7,7 +7,6 @@ namespace LiteDB.Tests
     public class DCustomer
     {
         public string Login { get; set; }
-        [LiteMapper(FieldName = "customer_name")]
         public string Name { get; set; }
     }
 
