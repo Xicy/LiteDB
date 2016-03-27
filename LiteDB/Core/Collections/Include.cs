@@ -14,7 +14,7 @@ namespace LiteDB
         public LiteCollection<T> Include<K>(Expression<Func<T, K>> dbref)
         {
             if (dbref == null) throw new ArgumentNullException("dbref");
-            var path = dbref.GetPath();
+            var path = _visitor.GetBsonField(dbref);
             _includes.Add(path);
             return this;
         }
@@ -23,7 +23,7 @@ namespace LiteDB
         {
             foreach (var path in _includes)
             {
-                Action<BsonDocument> action = bson =>
+                yield return delegate(BsonDocument bson)
                 {
                     var value = bson.Get(path);
 
@@ -54,7 +54,6 @@ namespace LiteDB
                         bson.Set(path, obj);
                     }
                 };
-                yield return action;
             }
         }
     }

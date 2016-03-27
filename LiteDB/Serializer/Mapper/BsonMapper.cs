@@ -127,10 +127,7 @@ namespace LiteDB
             {
                 lock (_mapper)
                 {
-                    if (!_mapper.TryGetValue(type, out props))
-                    {
-                        return _mapper[type] = Reflection.GetProperties(type, ResolvePropertyName);
-                    }
+                    return _mapper[type] = Reflection.GetProperties(type, ResolvePropertyName);
                 }
             }
 

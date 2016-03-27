@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
@@ -6,6 +7,7 @@ namespace LiteDB.Tests
     public class DCustomer
     {
         public string Login { get; set; }
+        [LiteMapper(FieldName = "customer_name")]
         public string Name { get; set; }
     }
 
@@ -62,12 +64,11 @@ namespace LiteDB.Tests
                 // create an index in Customer.Id ref
                 db.Orders.EnsureIndex(x => x.Customer.Login);
 
-                var a = db.GetCollection("orders").FindAll();
-                var b = db.GetCollection("customers").FindAll();
-
                 var query = db.Orders
                     .Include(x => x.Customer)
                     .FindOne(x => x.Customer.Login == "jd");
+
+                var a = db.Orders.Include(x => x.Customer).FindAll().ToArray();
 
                 Assert.AreEqual(customer.Name, query.Customer.Name);
             }
