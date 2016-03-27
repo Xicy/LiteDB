@@ -58,7 +58,7 @@ namespace LiteDB.Shell
                     writer.WriteLine("db.{0}.ensureIndex {1} {2}",
                         name,
                         index["field"].AsString,
-                        JsonSerializer.Serialize(index["options"].AsDocument));
+                        JsonSerializer.Serialize(index["options"]));
                 }
 
                 foreach (var doc in col.Find(Query.All()))

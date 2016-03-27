@@ -9,10 +9,10 @@ namespace LiteDB.Tests
 {
     public class Target
     {
-        [BsonId]
+        [LiteMapper]
         public ObjectId Id { get; set; }
 
-        [BsonIndex(true)]
+        [LiteMapper(Unique = true)]
         public string Name { get; set; }
 
         public DateTime LastUpdateCheck { get; set; }

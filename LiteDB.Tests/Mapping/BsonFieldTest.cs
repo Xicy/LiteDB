@@ -4,25 +4,25 @@ namespace LiteDB.Tests
 {
     public class MyBsonFieldTestClass
     {
-        [BsonField("MY-STRING")]
+        [LiteMapper(FieldName = "MY-STRING")]
         public string MyString { get; set; }
 
-        [BsonField]
+        [LiteMapper]
         internal string MyInternalPropertySerializable { get; set; }
 
-        [BsonField]
+        [LiteMapper]
         private string MyPrivatePropertySerializable { get; set; }
 
-        [BsonField]
+        [LiteMapper]
         protected string MyProtectedPropertySerializable { get; set; }
 
-        [BsonField("INTERNAL-PROPERTY")]
+        [LiteMapper(FieldName = "INTERNAL-PROPERTY")]
         internal string MyInternalPropertyNamed { get; set; }
 
-        [BsonField("PRIVATE-PROPERTY")]
+        [LiteMapper(FieldName = "PRIVATE-PROPERTY")]
         private string MyPrivatePropertyNamed { get; set; }
 
-        [BsonField("PROTECTED-PROPERTY")]
+        [LiteMapper(FieldName = "PROTECTED-PROPERTY")]
         protected string MyProtectedPropertyNamed { get; set; }
 
         internal string MyInternalPropertyNotSerializable { get; set; }

@@ -10,7 +10,7 @@ namespace LiteDB
         private DbEngine _engine;
         private BsonMapper _mapper;
         private Logger _log;
-        private List<Action<BsonDocument>> _includes;
+        private List<string> _includes;
         private QueryVisitor<T> _visitor;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace LiteDB
             _mapper = mapper;
             _log = log;
             _visitor = new QueryVisitor<T>(mapper);
-            _includes = new List<Action<BsonDocument>>();
+            _includes = new List<string>();
         }
     }
 }

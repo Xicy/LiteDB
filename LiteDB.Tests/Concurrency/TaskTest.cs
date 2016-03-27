@@ -8,7 +8,7 @@ namespace LiteDB.Tests
 {
     public class TestPocoClass
     {
-        [BsonId]
+        [LiteMapper(AutoID = AutoID.True)]
         public string Key { get; set; }
         public int Info { get; set; }
     }

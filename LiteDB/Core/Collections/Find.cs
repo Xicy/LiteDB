@@ -48,7 +48,7 @@ namespace LiteDB
             do
             {
                 // executing all includes in BsonDocument
-                foreach (var action in _includes)
+                foreach (var action in StartInclude())
                 {
                     action(enumerator.Current);
                 }

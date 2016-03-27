@@ -41,10 +41,10 @@ namespace LiteDB.Tests
 
     public class MyClass
     {
-        [BsonId(false)]
+        [LiteMapper]
         public int MyId { get; set; }
 
-        [BsonField("MY-STRING")]
+        [LiteMapper(FieldName = "MY-STRING")]
         public string MyString { get; set; }
 
         public Guid MyGuid { get; set; }
@@ -55,20 +55,20 @@ namespace LiteDB.Tests
         public char MyChar { get; set; }
         public byte MyByte { get; set; }
 
-        [BsonIndex(ignoreCase: true)]
+        [LiteMapper(IgnoreCase = true)]
         public decimal MyDecimal { get; set; }
 
         public decimal? MyDecimalNullable { get; set; }
 
-        [BsonIndex(true)]
+        [LiteMapper(Unique = true)]
         public Uri MyUri { get; set; }
 
         // serialize this properties
-        [BsonField]
+        [LiteMapper]
         internal string MyProperty { get; set; }
 
         // do not serialize this properties
-        [BsonIgnore]
+        [LiteMapper(Ignore = true)]
         public string MyIgnore { get; set; }
 
         public string MyReadOnly { get; private set; }

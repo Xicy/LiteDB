@@ -23,10 +23,11 @@ namespace LiteDB
         public static PropertyInfo GetIdProperty(Type type)
         {
             // Get all properties and test in order: BsonIdAttribute, "Id" name, "<typeName>Id" name
-            return SelectProperty(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic),
-                x => Attribute.IsDefined(x, typeof(BsonIdAttribute), true),
-                x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase),
-                x => x.Name.Equals(type.Name + "Id", StringComparison.OrdinalIgnoreCase));
+            return
+                 SelectProperty(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic),
+                     x => (((LiteMapperAttribute)Attribute.GetCustomAttribute(x, typeof(LiteMapperAttribute), true)) ?? new LiteMapperAttribute()).AutoID == AutoID.True,
+                     x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase),
+                     x => x.Name.Equals(type.Name + "Id", StringComparison.OrdinalIgnoreCase));
         }
 
         private static PropertyInfo SelectProperty(IEnumerable<PropertyInfo> props, params Func<PropertyInfo, bool>[] predicates)
@@ -60,10 +61,6 @@ namespace LiteDB
         {
             var dict = new Dictionary<string, PropertyMapper>(StringComparer.OrdinalIgnoreCase);
             var id = GetIdProperty(type);
-            var ignore = typeof(BsonIgnoreAttribute);
-            var idAttr = typeof(BsonIdAttribute);
-            var fieldAttr = typeof(BsonFieldAttribute);
-            var indexAttr = typeof(BsonIndexAttribute);
             var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
 
             foreach (var prop in props)
@@ -72,14 +69,14 @@ namespace LiteDB
                 if (prop.GetIndexParameters().Length > 0) continue;
 
                 // ignore not read/write
-                ////if (!prop.CanRead || !prop.CanWrite) continue;
-                if (!prop.CanRead) continue;
+                if (!prop.CanRead || !prop.CanWrite) continue;
 
-                // [BsonIgnore]
-                if (prop.IsDefined(ignore, false)) continue;
+                var mapper = (LiteMapperAttribute)prop.GetCustomAttributes(typeof(LiteMapperAttribute), false).FirstOrDefault() ?? new LiteMapperAttribute();
+
+                if (mapper.Ignore) continue;
 
                 // check if property has [BsonField]
-                var bsonField = prop.IsDefined(fieldAttr, false);
+                var bsonField = prop.IsDefined(typeof(LiteMapperAttribute), false);
 
                 // create getter/setter IL function
                 var getter = CreateGetMethod(type, prop, bsonField);
@@ -91,20 +88,7 @@ namespace LiteDB
                 var name = id != null && id.Equals(prop) ? "_id" : resolvePropertyName(prop.Name);
 
                 // check if property has [BsonField] with a custom field name
-                if (bsonField)
-                {
-                    var field = (BsonFieldAttribute)prop.GetCustomAttributes(fieldAttr, false).FirstOrDefault();
-                    if (field != null && field.Name != null) name = field.Name;
-                }
-
-                // check if property has [BsonId] to get with was setted AutoId = true
-                var autoId = (BsonIdAttribute)prop.GetCustomAttributes(idAttr, false).FirstOrDefault();
-
-                // checks if this proerty has [BsonIndex]
-                var index = (BsonIndexAttribute)prop.GetCustomAttributes(indexAttr, false).FirstOrDefault();
-
-                // if is _id field, do not accept index definition
-                if (name == "_id") index = null;
+                if (!string.IsNullOrEmpty(mapper.FieldName)) { name = mapper.FieldName; }
 
                 // test if field name is OK (avoid to check in all instances) - do not test internal classes, like DbRef
                 if (BsonDocument.IsValidFieldName(name) == false) throw LiteException.InvalidFormat(prop.Name, name);
@@ -112,11 +96,11 @@ namespace LiteDB
                 // create a property mapper
                 var p = new PropertyMapper
                 {
-                    AutoId = autoId == null ? true : autoId.AutoId,
+                    AutoId = mapper.AutoID == AutoID.Null || mapper.AutoID == AutoID.True,
                     FieldName = name,
                     PropertyName = prop.Name,
                     PropertyType = prop.PropertyType,
-                    IndexOptions = index == null ? null : index.Options,
+                    IndexOptions = name == "_id" ? null : mapper.Indexes,
                     Getter = getter,
                     Setter = setter
                 };
