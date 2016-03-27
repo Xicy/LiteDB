@@ -656,7 +656,7 @@ namespace LiteDB
             var text = (string) RawValue;
 
             if (options.TrimWhitespace) text = text.Trim();
-            if (options.IgnoreCase) text = text.ToLower();
+            if (options.IgnoreCase) text = text.ToLower(CultureInfo.InvariantCulture);
 
             // convert emptystring to null
             if (text.Length == 0 && options.EmptyStringToNull)

@@ -64,13 +64,14 @@ namespace LiteDB.Tests
                 var col = db.GetCollection<User>("Customer");
 
                 col.EnsureIndex(x => x.Name, true);
-
+                
                 col.Insert(new[] {c1, c2, c3, c4});
 
                 // a simple lambda function to returns string "Numeria"
                 Func<string> GetNumeria = () => "Numeria";
                 var strNumeria = GetNumeria();
 
+                var a = col.Stats();
                 // sub-class
                 Assert.AreEqual(3, col.Count(x => x.Domain.DomainName == "Numeria"));
                 Assert.AreEqual(3, col.Count(x => x.Domain.DomainName == GetNumeria()));
@@ -86,7 +87,7 @@ namespace LiteDB.Tests
 
                 // methods
                 Assert.AreEqual(1, col.Count(x => x.Name.StartsWith("mal")));
-                Assert.AreEqual(1, col.Count(x => x.Name.Equals("Mauricio")));
+                Assert.AreEqual(1, col.Count(x => x.Name.Equals("MAuricio")));
                 Assert.AreEqual(1, col.Count(x => x.Name.Contains("cio")));
 
                 // > >= < <=
@@ -96,8 +97,8 @@ namespace LiteDB.Tests
                 Assert.AreEqual(1, col.Count(x => x.Id <= 1));
 
                 // and/or
-                Assert.AreEqual(1, col.Count(x => x.Id > 0 && x.Name == "Mauricio"));
-                Assert.AreEqual(2, col.Count(x => x.Name == "Malatruco" || x.Name == "Mauricio"));
+                Assert.AreEqual(1, col.Count(x => x.Id > 0 && x.Name == "MAURICIO"));
+                Assert.AreEqual(2, col.Count(x => x.Name == "malatruco" || x.Name == "MAURICIO"));
             }
         }
 
