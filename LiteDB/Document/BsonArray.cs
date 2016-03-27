@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,19 +27,48 @@ namespace LiteDB
         public BsonArray(IEnumerable<BsonValue> items)
             : this()
         {
-            this.AddRange<BsonValue>(items);
+            AddRange(items);
         }
 
         public BsonArray(IEnumerable<BsonArray> items)
             : this()
         {
-            this.AddRange<BsonArray>(items);
+            AddRange(items);
         }
 
         public BsonArray(IEnumerable<BsonDocument> items)
             : this()
         {
-            this.AddRange<BsonDocument>(items);
+            AddRange(items);
+        }
+
+        public virtual BsonValue this[int index]
+        {
+            get { return RawValue.ElementAt(index); }
+            set { RawValue[index] = value ?? Null; }
+        }
+
+        public virtual int Count
+        {
+            get { return RawValue.Count; }
+        }
+
+        public new List<BsonValue> RawValue
+        {
+            get { return (List<BsonValue>) base.RawValue; }
+        }
+
+        public virtual IEnumerator<BsonValue> GetEnumerator()
+        {
+            foreach (var value in RawValue)
+            {
+                yield return new BsonValue(value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public virtual void AddRange<T>(IEnumerable<T> array)
@@ -48,80 +78,39 @@ namespace LiteDB
 
             foreach (var item in array)
             {
-                this.Add(item ?? BsonValue.Null);
-            }
-        }
-
-        public virtual BsonValue this[int index]
-        {
-            get
-            {
-                return this.RawValue.ElementAt(index);
-            }
-            set
-            {
-                this.RawValue[index] = value ?? BsonValue.Null;
+                Add(item ?? Null);
             }
         }
 
         public virtual BsonArray Add(BsonValue value)
         {
-            this.RawValue.Add(value ?? BsonValue.Null);
+            RawValue.Add(value ?? Null);
 
             return this;
         }
 
         public virtual void Remove(int index)
         {
-            this.RawValue.RemoveAt(index);
-        }
-
-        public virtual int Count
-        {
-            get
-            {
-                return this.RawValue.Count;
-            }
-        }
-
-        public new List<BsonValue> RawValue
-        {
-            get
-            {
-                return (List<BsonValue>)base.RawValue;
-            }
-        }
-
-        public virtual IEnumerator<BsonValue> GetEnumerator()
-        {
-            foreach (var value in this.RawValue)
-            {
-                yield return new BsonValue(value);
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
+            RawValue.RemoveAt(index);
         }
 
         public override int CompareTo(BsonValue other)
         {
             // if types are diferent, returns sort type order
-            if (other.Type != BsonType.Document) return this.Type.CompareTo(other.Type);
+            if (other.Type != BsonType.Document) return Type.CompareTo(other.Type);
 
             var otherArray = other.AsArray;
 
             var result = 0;
             var i = 0;
-            var stop = Math.Min(this.Count, otherArray.Count);
+            var stop = Math.Min(Count, otherArray.Count);
 
             // compare each element
             for (; 0 == result && i < stop; i++)
                 result = this[i].CompareTo(otherArray[i]);
 
             if (result != 0) return result;
-            if (i == this.Count) return i == otherArray.Count ? 0 : -1;
+            if (i == Count) return i == otherArray.Count ? 0 : -1;
             return 1;
         }
 

@@ -8,14 +8,14 @@ namespace LiteDB.Shell
     internal class Program
     {
         /// <summary>
-        /// Opens console shell app. Usage:
-        /// LiteDB.Shell [myfile.db] --param1 value1 --params2 "value 2"
-        /// Parameters:
-        /// --exec "command"   : Execute an shell command (can be multiples --exec)
-        /// --run script.txt   : Run script commands file 
-        /// --pretty           : Show JSON in multiline + idented
-        /// --upgrade newdb.db : Upgrade database to lastest version
-        /// --exit             : Exit after last command
+        ///     Opens console shell app. Usage:
+        ///     LiteDB.Shell [myfile.db] --param1 value1 --params2 "value 2"
+        ///     Parameters:
+        ///     --exec "command"   : Execute an shell command (can be multiples --exec)
+        ///     --run script.txt   : Run script commands file
+        ///     --pretty           : Show JSON in multiline + idented
+        ///     --upgrade newdb.db : Upgrade database to lastest version
+        ///     --exit             : Exit after last command
         /// </summary>
         private static void Main(string[] args)
         {
@@ -26,12 +26,12 @@ namespace LiteDB.Shell
             var o = new OptionSet();
 
             // default arg
-            o.Register((v) => input.Queue.Enqueue("open " + v));
+            o.Register(v => input.Queue.Enqueue("open " + v));
             o.Register("pretty", () => display.Pretty = true);
             o.Register("exit", () => input.AutoExit = true);
-            o.Register<string>("run", (v) => input.Queue.Enqueue("run " + v));
-            o.Register<string>("exec", (v) => input.Queue.Enqueue(v));
-            o.Register<string>("upgrade", (v) =>
+            o.Register<string>("run", v => input.Queue.Enqueue("run " + v));
+            o.Register<string>("exec", v => input.Queue.Enqueue(v));
+            o.Register<string>("upgrade", v =>
             {
                 var tmp = Path.GetTempFileName();
                 input.Queue.Enqueue("dump > " + tmp);
@@ -46,7 +46,7 @@ namespace LiteDB.Shell
         }
 
         /// <summary>
-        /// Dynamic resolve internal (embedded) old versions of LiteDB
+        ///     Dynamic resolve internal (embedded) old versions of LiteDB
         /// </summary>
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
@@ -58,9 +58,10 @@ namespace LiteDB.Shell
                 var v = match.Groups[1].Value + match.Groups[2].Value + match.Groups[3].Value;
 
                 // load assembly from resource stream  manifest
-                var stream = Assembly.GetEntryAssembly().GetManifestResourceStream("LiteDB.Shell.Resources.LiteDB" + v + ".dll");
+                var stream =
+                    Assembly.GetEntryAssembly().GetManifestResourceStream("LiteDB.Shell.Resources.LiteDB" + v + ".dll");
                 var buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, (int)stream.Length);
+                stream.Read(buffer, 0, (int) stream.Length);
                 return Assembly.Load(buffer);
             }
 

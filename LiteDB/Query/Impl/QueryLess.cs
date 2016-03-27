@@ -4,8 +4,8 @@ namespace LiteDB
 {
     internal class QueryLess : Query
     {
-        private BsonValue _value;
-        private bool _equals;
+        private readonly bool _equals;
+        private readonly BsonValue _value;
 
         public QueryLess(string field, BsonValue value, bool equals)
             : base(field)
@@ -18,7 +18,7 @@ namespace LiteDB
         {
             var value = _value.Normalize(index.Options);
 
-            foreach (var node in indexer.FindAll(index, Query.Ascending))
+            foreach (var node in indexer.FindAll(index, Ascending))
             {
                 var diff = node.Key.CompareTo(value);
 

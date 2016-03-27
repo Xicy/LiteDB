@@ -15,7 +15,7 @@ namespace LiteDB
         public static void WriteByte(this Stream stream, long position, byte value)
         {
             stream.Seek(position, SeekOrigin.Begin);
-            stream.Write(new byte[] { value }, 0, 1);
+            stream.Write(new[] {value}, 0, 1);
         }
 
         public static void CopyTo(this Stream input, Stream output)

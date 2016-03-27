@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -24,13 +24,13 @@ namespace LiteDB.Tests
 
                 var asc = string.Join("",
                     col.Find(Query.All("text", Query.Ascending))
-                    .Select(x => x["text"].AsString)
-                    .ToArray());
+                        .Select(x => x["text"].AsString)
+                        .ToArray());
 
                 var desc = string.Join("",
                     col.Find(Query.All("text", Query.Descending))
-                    .Select(x => x["text"].AsString)
-                    .ToArray());
+                        .Select(x => x["text"].AsString)
+                        .ToArray());
 
                 Assert.AreEqual(asc, "ABCDE");
                 Assert.AreEqual(desc, "EDCBA");

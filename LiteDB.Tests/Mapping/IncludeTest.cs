@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -38,9 +38,20 @@ namespace LiteDB.Tests
         {
         }
 
-        public LiteCollection<Customer> Customers { get { return this.GetCollection<Customer>("customers"); } }
-        public LiteCollection<Order> Orders { get { return this.GetCollection<Order>("orders"); } }
-        public LiteCollection<Product> Products { get { return this.GetCollection<Product>("products"); } }
+        public LiteCollection<Customer> Customers
+        {
+            get { return GetCollection<Customer>("customers"); }
+        }
+
+        public LiteCollection<Order> Orders
+        {
+            get { return GetCollection<Order>("orders"); }
+        }
+
+        public LiteCollection<Product> Products
+        {
+            get { return GetCollection<Product>("products"); }
+        }
 
         protected override void OnModelCreating(BsonMapper mapper)
         {
@@ -63,22 +74,22 @@ namespace LiteDB.Tests
         {
             using (var db = new IncludeDatabase())
             {
-                var customer = new Customer { Name = "John Doe" };
+                var customer = new Customer {Name = "John Doe"};
 
-                var product1 = new Product { Name = "TV", Price = 800 };
-                var product2 = new Product { Name = "DVD", Price = 200 };
+                var product1 = new Product {Name = "TV", Price = 800};
+                var product2 = new Product {Name = "DVD", Price = 200};
 
                 // insert ref documents
                 db.Customers.Insert(customer);
-                db.Products.Insert(new Product[] { product1, product2 });
+                db.Products.Insert(new[] {product1, product2});
 
                 var order = new Order
                 {
                     Customer = customer,
                     CustomerNull = null,
-                    Products = new List<Product>() { product1, product2 },
-                    ProductArray = new Product[] { product1 },
-                    ProductColl = new List<Product>() { product2 },
+                    Products = new List<Product> {product1, product2},
+                    ProductArray = new[] {product1},
+                    ProductColl = new List<Product> {product2},
                     ProductEmpty = new List<Product>(),
                     ProductsNull = null
                 };

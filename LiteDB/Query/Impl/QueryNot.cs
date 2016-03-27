@@ -4,11 +4,11 @@ using System.Linq;
 namespace LiteDB
 {
     /// <summary>
-    /// Not is an Index Scan operation
+    ///     Not is an Index Scan operation
     /// </summary>
     internal class QueryNot : Query
     {
-        private BsonValue _value;
+        private readonly BsonValue _value;
 
         public QueryNot(string field, BsonValue value)
             : base(field)
@@ -20,7 +20,7 @@ namespace LiteDB
         {
             var value = _value.Normalize(index.Options);
 
-            return indexer.FindAll(index, Query.Ascending).Where(x => x.Key.CompareTo(value) != 0);
+            return indexer.FindAll(index, Ascending).Where(x => x.Key.CompareTo(value) != 0);
         }
     }
 }

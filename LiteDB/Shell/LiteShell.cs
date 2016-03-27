@@ -6,18 +6,18 @@ namespace LiteDB.Shell
 {
     internal class LiteShell
     {
-        private static List<IShellCommand> _commands = new List<IShellCommand>();
+        private static readonly List<IShellCommand> _commands = new List<IShellCommand>();
 
         static LiteShell()
         {
-            var type = typeof(IShellCommand);
+            var type = typeof (IShellCommand);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p) && p.IsClass);
 
             foreach (var t in types)
             {
-                var cmd = (IShellCommand)Activator.CreateInstance(t);
+                var cmd = (IShellCommand) Activator.CreateInstance(t);
                 _commands.Add(cmd);
             }
         }

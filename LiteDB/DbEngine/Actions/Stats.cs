@@ -7,11 +7,11 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Get stats from a collection
+        ///     Get stats from a collection
         /// </summary>
         public BsonValue Stats(string colName)
         {
-            var col = this.GetCollectionPage(colName, false);
+            var col = GetCollectionPage(colName, false);
 
             if (col == null) return BsonValue.Null;
 
@@ -19,14 +19,14 @@ namespace LiteDB
 
             lock (_locker)
             {
-                this.Usage(col, out indexPages, out indexFree, out dataPages, out extendPages, out dataFree, out docSize);
+                Usage(col, out indexPages, out indexFree, out dataPages, out extendPages, out dataFree, out docSize);
             }
 
             return new BsonDocument()
                 .Add("name", colName)
-                .Add("documents", (int)col.DocumentCount)
-                .Add("documentAverageSize", (int)((float)docSize / col.DocumentCount))
-                .Add("indexes", new BsonArray(this.GetIndexes(colName, true)))
+                .Add("documents", (int) col.DocumentCount)
+                .Add("documentAverageSize", (int) ((float) docSize/col.DocumentCount))
+                .Add("indexes", new BsonArray(GetIndexes(colName, true)))
                 .Add("pages", new BsonDocument()
                     .Add("index", indexPages)
                     .Add("data", dataPages)

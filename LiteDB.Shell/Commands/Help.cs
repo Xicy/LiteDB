@@ -23,9 +23,11 @@ namespace LiteDB.Shell.Commands
                 d.WriteHelp("> db.<collection>.insert <jsonDoc>", "Insert a new document into collection");
                 d.WriteHelp("> db.<collection>.update <jsonDoc>", "Update a document inside collection");
                 d.WriteHelp("> db.<collection>.delete <filter>", "Delete documents using a filter clausule (see find)");
-                d.WriteHelp("> db.<collection>.find <filter> [skip N][limit N]", "Show filtered documents based on index search");
+                d.WriteHelp("> db.<collection>.find <filter> [skip N][limit N]",
+                    "Show filtered documents based on index search");
                 d.WriteHelp("> db.<collection>.count <filter>", "Show count rows according query filter");
-                d.WriteHelp("> db.<collection>.ensureIndex <field> [true|{options}]", "Create a new index document field. For unique key, use true");
+                d.WriteHelp("> db.<collection>.ensureIndex <field> [true|{options}]",
+                    "Create a new index document field. For unique key, use true");
                 d.WriteHelp("> db.<collection>.indexes", "List all indexes in this collection");
                 d.WriteHelp("<filter> = <field> [=|>|>=|<|<=|!=|like|between] <jsonValue>", "Filter query syntax");
                 d.WriteHelp("<filter> = (<filter> [and|or] <filter> [and|or] ...)", "Multi queries syntax");
@@ -66,19 +68,23 @@ namespace LiteDB.Shell.Commands
                 d.WriteHelp("> db.<collection>.delete <filter>", "Delete documents using a filter clausule (see find)");
                 d.WriteHelp("> db.<collection>.bulk <filename>", "Bulk insert a json file as documents");
                 d.WriteHelp("> db.<collection>.find [skip N][limit N]", "Show all documents. Can limit/skip results");
-                d.WriteHelp("> db.<collection>.find <filter> [skip N][limit N]", "Show filtered documents based on index search. See <filter> syntax below");
+                d.WriteHelp("> db.<collection>.find <filter> [skip N][limit N]",
+                    "Show filtered documents based on index search. See <filter> syntax below");
                 d.WriteHelp("> db.<collection>.count <filter>", "Show count rows according query filter");
                 d.WriteHelp("> db.<collection>.ensureIndex <field> [unique]", "Create a new index document field");
                 d.WriteHelp("> db.<collection>.indexes", "List all indexes in this collection");
                 d.WriteHelp("> db.<collection>.drop", "Drop collection and destroy all documents inside");
-                d.WriteHelp("> db.<collection>.dropIndex <field>", "Drop a index and make index area free to use with another index");
+                d.WriteHelp("> db.<collection>.dropIndex <field>",
+                    "Drop a index and make index area free to use with another index");
                 d.WriteHelp("> db.<collection>.rename <newCollectionName>", "Rename a collection");
                 d.WriteHelp("> db.<collection>.min <field>", "Returns min/first value from collection using index field");
                 d.WriteHelp("> db.<collection>.max <field>", "Returns max/last value from collection using index field");
                 d.WriteHelp("> db.<collection>.stats", "Display statistics about a collection");
-                d.WriteHelp("<filter> = <field> [=|>|>=|<|<=|!=|like|contains|in|between] <jsonValue>", "Filter query syntax");
+                d.WriteHelp("<filter> = <field> [=|>|>=|<|<=|!=|like|contains|in|between] <jsonValue>",
+                    "Filter query syntax");
                 d.WriteHelp("<filter> = (<filter> [and|or] <filter> [and|or] ...)", "Multi queries syntax");
-                d.WriteHelp("<jsonDoc> = {_id: ... , key: value, key1: value1 }", "Represent a json (extended version) for a BsonDocument. See special data types");
+                d.WriteHelp("<jsonDoc> = {_id: ... , key: value, key1: value1 }",
+                    "Represent a json (extended version) for a BsonDocument. See special data types");
                 d.WriteHelp("Json Date", "{ field: { $date :\"2015-01-01T23:59:59Z\"} }");
                 d.WriteHelp("Json Guid", "{ field: { $guid :\"3a1c34b3-9f66-4d8e-975a-d545d898a4ba\"} }");
                 d.WriteHelp("Json Binary", "{ field: { $binary :\"base64 byte array\"} }");

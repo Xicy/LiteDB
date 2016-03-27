@@ -6,7 +6,7 @@ namespace LiteDB
     public partial class LiteCollection<T>
     {
         /// <summary>
-        /// Remove all document based on a Query object. Returns removed document counts
+        ///     Remove all document based on a Query object. Returns removed document counts
         /// </summary>
         public int Delete(Query query)
         {
@@ -17,7 +17,7 @@ namespace LiteDB
             {
                 try
                 {
-                    return _engine.Delete(_name, query);
+                    return _engine.Delete(Name, query);
                 }
                 catch (IndexNotFoundException ex)
                 {
@@ -30,21 +30,21 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Remove all document based on a LINQ query. Returns removed document counts
+        ///     Remove all document based on a LINQ query. Returns removed document counts
         /// </summary>
         public int Delete(Expression<Func<T, bool>> predicate)
         {
-            return this.Delete(_visitor.Visit(predicate));
+            return Delete(_visitor.Visit(predicate));
         }
 
         /// <summary>
-        /// Remove an document in collection using Document Id - returns false if not found document
+        ///     Remove an document in collection using Document Id - returns false if not found document
         /// </summary>
         public bool Delete(BsonValue id)
         {
             if (id == null || id.IsNull) throw new ArgumentNullException("id");
 
-            return this.Delete(Query.EQ("_id", id)) > 0;
+            return Delete(Query.EQ("_id", id)) > 0;
         }
     }
 }

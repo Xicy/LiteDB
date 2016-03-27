@@ -6,11 +6,11 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Implements insert documents in a collection - use a buffer to commit transaction in each buffer count
+        ///     Implements insert documents in a collection - use a buffer to commit transaction in each buffer count
         /// </summary>
         public int Insert(string colName, IEnumerable<BsonDocument> docs)
         {
-            return this.Transaction<int>(colName, true, (col) =>
+            return Transaction(colName, true, col =>
             {
                 var count = 0;
 

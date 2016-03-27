@@ -3,8 +3,8 @@
 namespace LiteDB
 {
     /// <summary>
-    /// A logger class to log all information about database. Used with levels. Level = 0 - 255
-    /// All log will be trigger before operation execute (better for debug)
+    ///     A logger class to log all information about database. Used with levels. Level = 0 - 255
+    ///     All log will be trigger before operation execute (better for debug)
     /// </summary>
     public class Logger
     {
@@ -17,42 +17,47 @@ namespace LiteDB
         public const byte DISK = 64;
         public const byte FULL = 255;
 
-        /// <summary>
-        /// Event when log writes a message. Fire on each log message
-        /// </summary>
-        public event Action<string> Logging = null;
-
-        /// <summary>
-        /// To full logger use Logger.FULL or any combination of Logger constants like Level = Logger.ERROR | Logger.COMMAND | Logger.DISK
-        /// </summary>
-        public byte Level { get; set; }
-
         public Logger()
         {
-            this.Level = NONE;
+            Level = NONE;
         }
 
         /// <summary>
-        /// Write log text to output using inside a component (statics const of Logger)
+        ///     To full logger use Logger.FULL or any combination of Logger constants like Level = Logger.ERROR | Logger.COMMAND |
+        ///     Logger.DISK
+        /// </summary>
+        public byte Level { get; set; }
+
+        /// <summary>
+        ///     Event when log writes a message. Fire on each log message
+        /// </summary>
+        public event Action<string> Logging;
+
+        /// <summary>
+        ///     Write log text to output using inside a component (statics const of Logger)
         /// </summary>
         public void Write(byte level, string message, params object[] args)
         {
-            if ((level & this.Level) == 0) return;
+            if ((level & Level) == 0) return;
 
-            if (this.Logging != null)
+            if (Logging != null)
             {
                 var text = string.Format(message, args);
 
                 var str =
-                    level == ERROR ? "ERROR" :
-                    level == RECOVERY ? "RECOVERY" :
-                    level == COMMAND ? "COMMAND" :
-                    level == JOURNAL ? "JOURNAL" :
-                    level == DISK ? "DISK" : "QUERY";
+                    level == ERROR
+                        ? "ERROR"
+                        : level == RECOVERY
+                            ? "RECOVERY"
+                            : level == COMMAND
+                                ? "COMMAND"
+                                : level == JOURNAL
+                                    ? "JOURNAL"
+                                    : level == DISK ? "DISK" : "QUERY";
 
                 var msg = DateTime.Now.ToString("HH:mm:ss.ffff") + " [" + str + "] " + text;
 
-                this.Logging(msg);
+                Logging(msg);
             }
         }
     }

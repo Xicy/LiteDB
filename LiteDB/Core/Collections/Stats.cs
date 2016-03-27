@@ -3,11 +3,11 @@
     public partial class LiteCollection<T>
     {
         /// <summary>
-        /// Get collection stats
+        ///     Get collection stats
         /// </summary>
         public BsonDocument Stats()
         {
-            return _engine.Stats(_name).AsDocument;
+            return _engine.Stats(Name).AsDocument;
         }
     }
 }

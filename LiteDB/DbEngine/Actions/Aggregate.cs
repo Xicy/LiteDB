@@ -6,14 +6,14 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Returns first value from an index (first is min value)
+        ///     Returns first value from an index (first is min value)
         /// </summary>
         public BsonValue Min(string colName, string field)
         {
             lock (_locker)
             {
                 // get collection page (no col, no min)
-                var col = this.GetCollectionPage(colName, false);
+                var col = GetCollectionPage(colName, false);
 
                 if (col == null) return BsonValue.MinValue;
 
@@ -32,14 +32,14 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Returns last value from an index (last is max value)
+        ///     Returns last value from an index (last is max value)
         /// </summary>
         public BsonValue Max(string colName, string field)
         {
             lock (_locker)
             {
                 // get collection page (no col, no max)
-                var col = this.GetCollectionPage(colName, false);
+                var col = GetCollectionPage(colName, false);
 
                 if (col == null) return BsonValue.MaxValue;
 
@@ -58,14 +58,14 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Count all nodes from a query execution - do not deserialize documents to count
+        ///     Count all nodes from a query execution - do not deserialize documents to count
         /// </summary>
         public long Count(string colName, Query query)
         {
             lock (_locker)
             {
                 // get collection page (no col, returns 0)
-                var col = this.GetCollectionPage(colName, false);
+                var col = GetCollectionPage(colName, false);
 
                 if (col == null) return 0;
 
@@ -80,14 +80,14 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Check if has at least one node in a query execution - do not deserialize documents to check
+        ///     Check if has at least one node in a query execution - do not deserialize documents to check
         /// </summary>
         public bool Exists(string colName, Query query)
         {
             lock (_locker)
             {
                 // get collection page (no col, not exists)
-                var col = this.GetCollectionPage(colName, false);
+                var col = GetCollectionPage(colName, false);
 
                 if (col == null) return false;
 

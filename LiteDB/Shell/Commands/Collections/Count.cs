@@ -4,13 +4,13 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "count");
+            return IsCollectionCommand(s, "count");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
-            var query = this.ReadQuery(s);
+            var col = ReadCollection(engine, s);
+            var query = ReadQuery(s);
 
             return engine.Count(col, query);
         }

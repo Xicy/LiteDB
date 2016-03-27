@@ -3,7 +3,7 @@
 namespace LiteDB
 {
     /// <summary>
-    /// Represent a index node inside a Index Page
+    ///     Represent a index node inside a Index Page
     /// </summary>
     internal class IndexNode
     {
@@ -14,88 +14,88 @@ namespace LiteDB
                                                  PageAddress.SIZE; // DataBlock
 
         /// <summary>
-        /// Max level used on skip list
+        ///     Max level used on skip list
         /// </summary>
         public const int MAX_LEVEL_LENGTH = 32;
 
+        public IndexNode(byte level)
+        {
+            Position = PageAddress.Empty;
+            DataBlock = PageAddress.Empty;
+            Prev = new PageAddress[level];
+            Next = new PageAddress[level];
+
+            for (var i = 0; i < level; i++)
+            {
+                Prev[i] = PageAddress.Empty;
+                Next[i] = PageAddress.Empty;
+            }
+        }
+
         /// <summary>
-        /// Position of this node inside a IndexPage - Store only Position.Index
+        ///     Position of this node inside a IndexPage - Store only Position.Index
         /// </summary>
         public PageAddress Position { get; set; }
 
         /// <summary>
-        /// Pointer to prev value (used in skip lists - Prev.Length = Next.Length)
+        ///     Pointer to prev value (used in skip lists - Prev.Length = Next.Length)
         /// </summary>
         public PageAddress[] Prev { get; set; }
 
         /// <summary>
-        /// Pointer to next value (used in skip lists - Prev.Length = Next.Length)
+        ///     Pointer to next value (used in skip lists - Prev.Length = Next.Length)
         /// </summary>
         public PageAddress[] Next { get; set; }
 
         /// <summary>
-        /// Length of key - used for calculate Node size
+        ///     Length of key - used for calculate Node size
         /// </summary>
         public ushort KeyLength { get; set; }
 
         /// <summary>
-        /// The object value that was indexed
+        ///     The object value that was indexed
         /// </summary>
         public BsonValue Key { get; set; }
 
         /// <summary>
-        /// Reference for a datablock - the value
+        ///     Reference for a datablock - the value
         /// </summary>
         public PageAddress DataBlock { get; set; }
 
         /// <summary>
-        /// Get page reference
+        ///     Get page reference
         /// </summary>
         public IndexPage Page { get; set; }
 
         /// <summary>
-        /// Returns Next (order == 1) OR Prev (order == -1)
-        /// </summary>
-        public PageAddress NextPrev(int index, int order)
-        {
-            return order == Query.Ascending ? this.Next[index] : this.Prev[index];
-        }
-
-        /// <summary>
-        /// Returns if this node is header or tail from collection Index
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public bool IsHeadTail(CollectionIndex index)
-        {
-            return this.Position.Equals(index.HeadNode) || this.Position.Equals(index.TailNode);
-        }
-
-        /// <summary>
-        /// Get the length size of this node in disk - not persistable
+        ///     Get the length size of this node in disk - not persistable
         /// </summary>
         public int Length
         {
             get
             {
-                return IndexNode.INDEX_NODE_FIXED_SIZE +
-                    (this.Prev.Length * PageAddress.SIZE * 2) + // Prev + Next
-                    this.KeyLength; // bytes count in BsonValue
+                return INDEX_NODE_FIXED_SIZE +
+                       Prev.Length*PageAddress.SIZE*2 + // Prev + Next
+                       KeyLength; // bytes count in BsonValue
             }
         }
 
-        public IndexNode(byte level)
+        /// <summary>
+        ///     Returns Next (order == 1) OR Prev (order == -1)
+        /// </summary>
+        public PageAddress NextPrev(int index, int order)
         {
-            this.Position = PageAddress.Empty;
-            this.DataBlock = PageAddress.Empty;
-            this.Prev = new PageAddress[level];
-            this.Next = new PageAddress[level];
+            return order == Query.Ascending ? Next[index] : Prev[index];
+        }
 
-            for (var i = 0; i < level; i++)
-            {
-                this.Prev[i] = PageAddress.Empty;
-                this.Next[i] = PageAddress.Empty;
-            }
+        /// <summary>
+        ///     Returns if this node is header or tail from collection Index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public bool IsHeadTail(CollectionIndex index)
+        {
+            return Position.Equals(index.HeadNode) || Position.Equals(index.TailNode);
         }
     }
 
@@ -103,7 +103,7 @@ namespace LiteDB
     {
         public bool Equals(IndexNode x, IndexNode y)
         {
-            if (object.ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y)) return true;
 
             if (x == null || y == null) return false;
 

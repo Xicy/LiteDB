@@ -4,11 +4,11 @@ using System.Linq;
 namespace LiteDB
 {
     /// <summary>
-    /// Contains query do not work with index, only full scan
+    ///     Contains query do not work with index, only full scan
     /// </summary>
     internal class QueryContains : Query
     {
-        private BsonValue _value;
+        private readonly BsonValue _value;
 
         public QueryContains(string field, BsonValue value)
             : base(field)
@@ -21,7 +21,7 @@ namespace LiteDB
             var v = _value.Normalize(index.Options);
 
             return indexer
-                .FindAll(index, Query.Ascending)
+                .FindAll(index, Ascending)
                 .Where(x => x.Key.IsString && x.Key.AsString.Contains(v));
         }
     }

@@ -14,7 +14,7 @@ namespace LiteDB.Shell.Commands
             var sb = new StringBuilder();
             var enabled = !(s.Scan(@"off\s*").Length > 0);
 
-            if(engine == null) throw ShellExpcetion.NoDatabase();
+            if (engine == null) throw ShellExpcetion.NoDatabase();
 
             engine.Debug(enabled);
         }

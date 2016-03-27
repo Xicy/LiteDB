@@ -6,7 +6,7 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Copy database do another disk
+        ///     Copy database do another disk
         /// </summary>
         public long Shrink()
         {

@@ -4,13 +4,13 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsFileCommand(s, "delete");
+            return IsFileCommand(s, "delete");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
             var fs = new LiteFileStorage(engine);
-            var id = this.ReadId(s);
+            var id = ReadId(s);
 
             return fs.Delete(id);
         }

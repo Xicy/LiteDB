@@ -4,11 +4,11 @@ using System.IO;
 namespace LiteDB
 {
     /// <summary>
-    /// A simple implementation of diskservice using base Stream (no journal, thread safe)
+    ///     A simple implementation of diskservice using base Stream (no journal, thread safe)
     /// </summary>
     internal class StreamDiskService : IDiskService
     {
-        private Stream _stream;
+        private readonly Stream _stream;
 
         public StreamDiskService(Stream stream)
         {
@@ -16,32 +16,32 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Checks only if stream is empty
+        ///     Checks only if stream is empty
         /// </summary>
         public bool Initialize()
         {
-            return (_stream.Length == 0);
+            return _stream.Length == 0;
         }
 
         /// <summary>
-        /// Create new database - just create empty header page
+        ///     Create new database - just create empty header page
         /// </summary>
         public void CreateNew()
         {
-            this.WritePage(0, new HeaderPage().WritePage());
+            WritePage(0, new HeaderPage().WritePage());
         }
 
         #region Lock/Unlock
 
         /// <summary>
-        /// Lock stream
+        ///     Lock stream
         /// </summary>
         public void Lock()
         {
         }
 
         /// <summary>
-        /// Release lock
+        ///     Release lock
         /// </summary>
         public void Unlock()
         {
@@ -52,7 +52,7 @@ namespace LiteDB
         #region Read/Write
 
         /// <summary>
-        /// Read first 2 bytes from datafile - contains changeID (avoid to read all header page)
+        ///     Read first 2 bytes from datafile - contains changeID (avoid to read all header page)
         /// </summary>
         public ushort GetChangeID()
         {
@@ -63,7 +63,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Read page bytes from disk
+        ///     Read page bytes from disk
         /// </summary>
         public byte[] ReadPage(uint pageID)
         {
@@ -83,7 +83,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Persist single page bytes to disk
+        ///     Persist single page bytes to disk
         /// </summary>
         public void WritePage(uint pageID, byte[] buffer)
         {
@@ -99,7 +99,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Set datafile length (not used)
+        ///     Set datafile length (not used)
         /// </summary>
         public void SetLength(long fileSize)
         {

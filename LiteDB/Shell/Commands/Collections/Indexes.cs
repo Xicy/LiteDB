@@ -6,12 +6,12 @@ namespace LiteDB.Shell.Commands
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "indexes$");
+            return IsCollectionCommand(s, "indexes$");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
+            var col = ReadCollection(engine, s);
 
             return new BsonArray(engine.GetIndexes(col).Select(x => x.AsDocument));
         }

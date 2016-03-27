@@ -6,7 +6,7 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Dump all pages into a string - debug purpose only
+        ///     Dump all pages into a string - debug purpose only
         /// </summary>
         public StringBuilder DumpPages(uint startPage = 0, uint endPage = uint.MaxValue)
         {
@@ -16,9 +16,9 @@ namespace LiteDB
             sb.AppendLine("=============");
             sb.AppendLine();
 
-            var header = (HeaderPage)BasePage.ReadPage(_disk.ReadPage(0));
+            var header = (HeaderPage) BasePage.ReadPage(_disk.ReadPage(0));
 
-            for (uint i = startPage; i <= endPage; i++)
+            for (var i = startPage; i <= endPage; i++)
             {
                 if (i > header.LastPageID) break;
 
@@ -40,13 +40,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Dump skip list to a human reable format - debug purpose only
+        ///     Dump skip list to a human reable format - debug purpose only
         /// </summary>
         public StringBuilder DumpIndex(string colName, string field, int size = 5)
         {
             var sbs = new StringBuilder[IndexNode.MAX_LEVEL_LENGTH + 1];
 
-            var col = this.GetCollectionPage(colName, false);
+            var col = GetCollectionPage(colName, false);
             if (col == null) throw new ArgumentException("Invalid collection name");
 
             var index = col.GetIndex(field);
@@ -64,7 +64,7 @@ namespace LiteDB
                 var page = _pager.GetPage<IndexPage>(cur.PageID);
                 var node = page.Nodes[cur.Index];
 
-                sbs[0].Append((Limit(node.Key.ToString(), size)).PadBoth(1 + (2 * size)));
+                sbs[0].Append(Limit(node.Key.ToString(), size).PadBoth(1 + 2*size));
 
                 for (var i = 0; i < IndexNode.MAX_LEVEL_LENGTH; i++)
                 {
@@ -140,12 +140,12 @@ namespace LiteDB
 
         public static void Dump(this BasePage page, StringBuilder sb)
         {
-            if (page is HeaderPage) Dump((HeaderPage)page, sb);
-            if (page is CollectionPage) Dump((CollectionPage)page, sb);
-            if (page is IndexPage) Dump((IndexPage)page, sb);
-            if (page is DataPage) Dump((DataPage)page, sb);
-            if (page is ExtendPage) Dump((ExtendPage)page, sb);
-            if (page is EmptyPage) Dump((EmptyPage)page, sb);
+            if (page is HeaderPage) Dump((HeaderPage) page, sb);
+            if (page is CollectionPage) Dump((CollectionPage) page, sb);
+            if (page is IndexPage) Dump((IndexPage) page, sb);
+            if (page is DataPage) Dump((DataPage) page, sb);
+            if (page is ExtendPage) Dump((ExtendPage) page, sb);
+            if (page is EmptyPage) Dump((EmptyPage) page, sb);
         }
 
         public static void Dump(this HeaderPage page, StringBuilder sb)
@@ -207,8 +207,8 @@ namespace LiteDB
 
         public static string PadBoth(this string str, int length)
         {
-            int spaces = length - str.Length;
-            int padLeft = spaces / 2 + str.Length;
+            var spaces = length - str.Length;
+            var padLeft = spaces/2 + str.Length;
             return str.PadLeft(padLeft).PadRight(length);
         }
     }

@@ -7,11 +7,12 @@ using System.Text.RegularExpressions;
 namespace LiteDB
 {
     /// <summary>
-    /// Manage ConnectionString to connect and create databases. Connection string are NameValue using Name1=Value1; Name2=Value2
+    ///     Manage ConnectionString to connect and create databases. Connection string are NameValue using Name1=Value1;
+    ///     Name2=Value2
     /// </summary>
     internal class ConnectionString
     {
-        private Dictionary<string, string> _values;
+        private readonly Dictionary<string, string> _values;
 
         public ConnectionString(string connectionString)
         {
@@ -20,9 +21,10 @@ namespace LiteDB
             // Create a dictionary from string name=value collection
             if (connectionString.Contains("="))
             {
-                _values = connectionString.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(t => t.Split(new char[] { '=' }, 2))
-                    .ToDictionary(t => t[0].Trim().ToLower(), t => t.Length == 1 ? "" : t[1].Trim(), StringComparer.OrdinalIgnoreCase);
+                _values = connectionString.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Split(new[] {'='}, 2))
+                    .ToDictionary(t => t[0].Trim().ToLower(), t => t.Length == 1 ? "" : t[1].Trim(),
+                        StringComparer.OrdinalIgnoreCase);
             }
             else
             {
@@ -36,9 +38,9 @@ namespace LiteDB
         {
             try
             {
-                return _values.ContainsKey(key) ?
-                    (T)Convert.ChangeType(_values[key], typeof(T)) :
-                    defaultValue;
+                return _values.ContainsKey(key)
+                    ? (T) Convert.ChangeType(_values[key], typeof (T))
+                    : defaultValue;
             }
             catch (Exception)
             {
@@ -47,11 +49,11 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Get a value from a key converted in file size format: "1gb", "10 mb", "80000"
+        ///     Get a value from a key converted in file size format: "1gb", "10 mb", "80000"
         /// </summary>
         public long GetFileSize(string key, long defaultSize)
         {
-            var size = this.GetValue<string>(key, "");
+            var size = GetValue(key, "");
 
             if (size.Length == 0) return defaultSize;
 
@@ -63,25 +65,30 @@ namespace LiteDB
 
             switch (match.Groups[2].Value.ToLower())
             {
-                case "t": return num * 1024L * 1024L * 1024L * 1024L;
-                case "g": return num * 1024L * 1024L * 1024L;
-                case "m": return num * 1024L * 1024L;
-                case "k": return num * 1024L;
-                case "": return num;
+                case "t":
+                    return num*1024L*1024L*1024L*1024L;
+                case "g":
+                    return num*1024L*1024L*1024L;
+                case "m":
+                    return num*1024L*1024L;
+                case "k":
+                    return num*1024L;
+                case "":
+                    return num;
             }
 
             return 0;
         }
 
-        public static String FormatFileSize(long byteCount)
+        public static string FormatFileSize(long byteCount)
         {
-            string[] suf = { "B", "KB", "MB", "GB", "TB" }; //Longs run out around EB
+            string[] suf = {"B", "KB", "MB", "GB", "TB"}; //Longs run out around EB
             if (byteCount == 0)
                 return "0" + suf[0];
-            long bytes = Math.Abs(byteCount);
-            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            return (Math.Sign(byteCount) * num).ToString() + suf[place];
+            var bytes = Math.Abs(byteCount);
+            var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            var num = Math.Round(bytes/Math.Pow(1024, place), 1);
+            return Math.Sign(byteCount)*num + suf[place];
         }
     }
 }

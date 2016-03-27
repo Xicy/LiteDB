@@ -6,24 +6,21 @@ namespace LiteDB.Shell.Commands
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "insert");
+            return IsCollectionCommand(s, "insert");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
+            var col = ReadCollection(engine, s);
             var value = JsonSerializer.Deserialize(s);
 
             if (value.IsArray)
             {
                 return engine.Insert(col, value.AsArray.RawValue.Select(x => x.AsDocument));
             }
-            else
-            {
-                engine.Insert(col, new BsonDocument[] { value.AsDocument });
+            engine.Insert(col, new[] {value.AsDocument});
 
-                return BsonValue.Null;
-            }
+            return BsonValue.Null;
         }
     }
 }

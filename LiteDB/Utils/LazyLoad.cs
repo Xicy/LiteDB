@@ -5,11 +5,11 @@ namespace LiteDB
     internal class LazyLoad<T>
         where T : class
     {
-        private T _value = null;
-        private Func<T> _factory;
-        private Action _before = () => { };
-        private Action _after = () => { };
-        private object _locker = new object();
+        private readonly Action _after = () => { };
+        private readonly Action _before = () => { };
+        private readonly Func<T> _factory;
+        private readonly object _locker = new object();
+        private T _value;
 
         public LazyLoad(Func<T> factory, Action before, Action after)
         {
@@ -18,7 +18,10 @@ namespace LiteDB
             _after = after;
         }
 
-        public bool IsValueCreated { get { return _value != null; } }
+        public bool IsValueCreated
+        {
+            get { return _value != null; }
+        }
 
         public T Value
         {

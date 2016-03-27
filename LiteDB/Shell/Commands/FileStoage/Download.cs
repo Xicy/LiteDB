@@ -4,13 +4,13 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsFileCommand(s, "download");
+            return IsFileCommand(s, "download");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
             var fs = new LiteFileStorage(engine);
-            var id = this.ReadId(s);
+            var id = ReadId(s);
             var filename = s.Scan(@"\s*.*").Trim();
 
             var file = fs.FindById(id);
@@ -21,10 +21,7 @@
 
                 return file.AsDocument;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

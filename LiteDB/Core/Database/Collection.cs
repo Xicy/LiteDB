@@ -7,7 +7,7 @@ namespace LiteDB
     public partial class LiteDatabase : IDisposable
     {
         /// <summary>
-        /// Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
+        ///     Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
         /// </summary>
         /// <param name="name">Collection name (case insensitive)</param>
         public LiteCollection<T> GetCollection<T>(string name)
@@ -15,22 +15,22 @@ namespace LiteDB
         {
             if (name.IsNullOrWhiteSpace()) throw new ArgumentNullException("name");
 
-            return new LiteCollection<T>(name, _engine.Value, _mapper, _log);
+            return new LiteCollection<T>(name, _engine.Value, _mapper, Log);
         }
 
         /// <summary>
-        /// Get a collection using a generic BsonDocument. If collection does not exits, create a new one.
+        ///     Get a collection using a generic BsonDocument. If collection does not exits, create a new one.
         /// </summary>
         /// <param name="name">Collection name (case insensitive)</param>
         public LiteCollection<BsonDocument> GetCollection(string name)
         {
             if (name.IsNullOrWhiteSpace()) throw new ArgumentNullException("name");
 
-            return new LiteCollection<BsonDocument>(name, _engine.Value, _mapper, _log);
+            return new LiteCollection<BsonDocument>(name, _engine.Value, _mapper, Log);
         }
 
         /// <summary>
-        /// Get all collections name inside this database.
+        ///     Get all collections name inside this database.
         /// </summary>
         public IEnumerable<string> GetCollectionNames()
         {
@@ -38,7 +38,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Checks if a collection exists on database. Collection name is case unsensitive
+        ///     Checks if a collection exists on database. Collection name is case unsensitive
         /// </summary>
         public bool CollectionExists(string name)
         {
@@ -48,7 +48,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Drop a collection and all data + indexes
+        ///     Drop a collection and all data + indexes
         /// </summary>
         public bool DropCollection(string name)
         {
@@ -58,7 +58,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Rename a collection. Returns false if oldName does not exists or newName already exists
+        ///     Rename a collection. Returns false if oldName does not exists or newName already exists
         /// </summary>
         public bool RenameCollection(string oldName, string newName)
         {

@@ -1,31 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LiteDB
 {
     public sealed partial class LiteCollection<T>
         where T : new()
     {
-        private string _name;
-        private DbEngine _engine;
-        private BsonMapper _mapper;
-        private Logger _log;
-        private List<string> _includes;
-        private QueryVisitor<T> _visitor;
-
-        /// <summary>
-        /// Get collection name
-        /// </summary>
-        public string Name { get { return _name; } }
+        private readonly DbEngine _engine;
+        private readonly List<string> _includes;
+        private readonly Logger _log;
+        private readonly BsonMapper _mapper;
+        private readonly QueryVisitor<T> _visitor;
 
         internal LiteCollection(string name, DbEngine engine, BsonMapper mapper, Logger log)
         {
-            _name = name;
+            Name = name;
             _engine = engine;
             _mapper = mapper;
             _log = log;
             _visitor = new QueryVisitor<T>(mapper);
             _includes = new List<string>();
         }
+
+        /// <summary>
+        ///     Get collection name
+        /// </summary>
+        public string Name { get; }
     }
 }

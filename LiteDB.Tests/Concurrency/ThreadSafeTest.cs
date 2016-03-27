@@ -1,15 +1,15 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
     [TestClass]
     public class ThreadSafeTest
     {
-        private Random _rnd = new Random();
+        private readonly Random _rnd = new Random();
 
         [TestMethod]
         public void Thread_Test()
@@ -27,7 +27,7 @@ namespace LiteDB.Tests
             {
                 for (var i = 1; i <= N; i++)
                 {
-                    col.Insert(this.CreateDoc(i, "-insert-"));
+                    col.Insert(CreateDoc(i, "-insert-"));
                 }
             });
 
@@ -37,7 +37,7 @@ namespace LiteDB.Tests
                 var i = 1;
                 while (i <= N)
                 {
-                    var doc = this.CreateDoc(i, "-update-");
+                    var doc = CreateDoc(i, "-update-");
                     doc["date"] = new DateTime(2015, 1, 1);
                     doc["desc"] = null;
 
@@ -70,7 +70,7 @@ namespace LiteDB.Tests
             {
                 for (var i = 1; i <= 40; i++)
                 {
-                    a.FileStorage.Upload("f" + i, this.CreateMemoryFile(20000));
+                    a.FileStorage.Upload("f" + i, CreateMemoryFile(20000));
                 }
                 for (var i = 1; i <= 20; i++)
                 {
@@ -106,7 +106,7 @@ namespace LiteDB.Tests
             doc["name"] = name;
             doc["desc"] = DB.LoremIpsum(10, 10, 2, 2, 2);
             doc["date"] = DateTime.Now.AddDays(_rnd.Next(300));
-            doc["value"] = _rnd.NextDouble() * 5000;
+            doc["value"] = _rnd.NextDouble()*5000;
 
             return doc;
         }

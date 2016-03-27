@@ -7,11 +7,11 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Create a new index (or do nothing if already exisits) to a collection/field
+        ///     Create a new index (or do nothing if already exisits) to a collection/field
         /// </summary>
         public bool EnsureIndex(string colName, string field, IndexOptions options)
         {
-            return this.Transaction<bool>(colName, true, (col) =>
+            return Transaction(colName, true, col =>
             {
                 // check if index already exists
                 if (col.GetIndex(field) != null) return false;
@@ -55,13 +55,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Drop an index from a collection
+        ///     Drop an index from a collection
         /// </summary>
         public bool DropIndex(string colName, string field)
         {
             if (field == "_id") throw LiteException.IndexDropId();
 
-            return this.Transaction<bool>(colName, false, (col) =>
+            return Transaction(colName, false, col =>
             {
                 // no collection, no index
                 if (col == null) return false;
@@ -88,11 +88,11 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// List all indexes inside a collection
+        ///     List all indexes inside a collection
         /// </summary>
         public IEnumerable<BsonDocument> GetIndexes(string colName, bool stats = false)
         {
-            var col = this.GetCollectionPage(colName, false);
+            var col = GetCollectionPage(colName, false);
 
             if (col == null) yield break;
 
@@ -121,8 +121,8 @@ namespace LiteDB
                     doc.Add("stats", new BsonDocument()
                         .Add("pages", pages)
                         .Add("allocated", BasePage.GetSizeOfPages(pages))
-                        .Add("keyAverageSize", (int)keySize)
-                    );
+                        .Add("keyAverageSize", (int) keySize)
+                        );
                 }
 
                 yield return doc;

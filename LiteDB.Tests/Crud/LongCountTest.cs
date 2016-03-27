@@ -1,7 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -25,7 +23,7 @@ namespace LiteDB.Tests
 
         public IEnumerable<BsonDocument> GetDocs()
         {
-            for(long i = 0; i <= TOTAL_COUNT; i++)
+            for (long i = 0; i <= TOTAL_COUNT; i++)
             {
                 yield return new BsonDocument().Add("_id", i);
             }

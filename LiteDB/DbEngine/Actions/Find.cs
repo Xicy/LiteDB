@@ -7,12 +7,12 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Find for documents in a collection using Query definition
+        ///     Find for documents in a collection using Query definition
         /// </summary>
         public IEnumerable<BsonDocument> Find(string colName, Query query, int skip = 0, int limit = int.MaxValue)
         {
             // get my collection page
-            var col = this.GetCollectionPage(colName, false);
+            var col = GetCollectionPage(colName, false);
 
             // no collection, no documents
             if (col == null) yield break;

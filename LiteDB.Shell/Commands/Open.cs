@@ -22,8 +22,8 @@ namespace LiteDB.Shell.Commands
             }
 
             // get filename, detect engine and open
-            var filename = this.GetFilename(connectionString);
-            engine = this.DetectEngine(filename);
+            var filename = GetFilename(connectionString);
+            engine = DetectEngine(filename);
             engine.Open(connectionString);
 
             // get engine version and display info
@@ -56,7 +56,7 @@ namespace LiteDB.Shell.Commands
         }
 
         /// <summary>
-        /// Get filename from connection string
+        ///     Get filename from connection string
         /// </summary>
         private string GetFilename(string connectionString)
         {
@@ -65,9 +65,10 @@ namespace LiteDB.Shell.Commands
             // Create a dictionary from string name=value collection
             if (connectionString.Contains("="))
             {
-                values = connectionString.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(t => t.Split(new char[] { '=' }, 2))
-                    .ToDictionary(t => t[0].Trim().ToLower(), t => t.Length == 1 ? "" : t[1].Trim(), StringComparer.OrdinalIgnoreCase);
+                values = connectionString.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Split(new[] {'='}, 2))
+                    .ToDictionary(t => t[0].Trim().ToLower(), t => t.Length == 1 ? "" : t[1].Trim(),
+                        StringComparer.OrdinalIgnoreCase);
             }
             else
             {
@@ -76,7 +77,8 @@ namespace LiteDB.Shell.Commands
                 values["filename"] = Path.GetFullPath(connectionString);
             }
 
-            if(!values.ContainsKey("filename")) throw new ShellExpcetion("Invalid connection string. Missing filename");
+            if (!values.ContainsKey("filename"))
+                throw new ShellExpcetion("Invalid connection string. Missing filename");
 
             return values["filename"];
         }

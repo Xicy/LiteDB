@@ -5,7 +5,7 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Get database schema version
+        ///     Get database schema version
         /// </summary>
         public DbParams GetDbParam()
         {
@@ -20,12 +20,12 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Set a new dbversion
+        ///     Set a new dbversion
         /// </summary>
         public void SetParam(DbParams dbparams)
         {
             lock (_locker)
-            try
+                try
                 {
                     _transaction.Begin();
                     _transaction.AvoidDirtyRead();

@@ -7,7 +7,7 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Returns all collection inside datafile
+        ///     Returns all collection inside datafile
         /// </summary>
         public IEnumerable<string> GetCollectionNames()
         {
@@ -22,11 +22,11 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Drop collection including all documents, indexes and extended pages
+        ///     Drop collection including all documents, indexes and extended pages
         /// </summary>
         public bool DropCollection(string colName)
         {
-            return this.Transaction<bool>(colName, false, (col) =>
+            return Transaction(colName, false, col =>
             {
                 if (col == null) return false;
 
@@ -39,18 +39,18 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Rename a collection
+        ///     Rename a collection
         /// </summary>
         public bool RenameCollection(string colName, string newName)
         {
-            return this.Transaction<bool>(colName, false, (col) =>
+            return Transaction(colName, false, col =>
             {
                 if (col == null) return false;
 
                 _log.Write(Logger.COMMAND, "rename collection '{0}' -> '{1}'", colName, newName);
 
                 // check if newName already exists
-                if (this.GetCollectionNames().Contains(newName, StringComparer.OrdinalIgnoreCase))
+                if (GetCollectionNames().Contains(newName, StringComparer.OrdinalIgnoreCase))
                 {
                     throw LiteException.AlreadyExistsCollectionName(newName);
                 }

@@ -32,7 +32,7 @@ namespace LiteDB.Shell.Commands
 
                 display.TextWriters.Add(_writer);
 
-                input.OnWrite = (t) => _writer.Write(t);
+                input.OnWrite = t => _writer.Write(t);
             }
         }
     }

@@ -6,11 +6,11 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Implement update command to a document inside a collection
+        ///     Implement update command to a document inside a collection
         /// </summary>
         public int Update(string colName, IEnumerable<BsonDocument> docs)
         {
-            return this.Transaction<int>(colName, false, (col) =>
+            return Transaction(colName, false, col =>
             {
                 // no collection, no updates
                 if (col == null) return 0;

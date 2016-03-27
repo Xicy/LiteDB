@@ -1,18 +1,23 @@
 ﻿extern alias v200;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using v200::LiteDB;
+using BsonValue = v200::LiteDB.BsonValue;
+using JsonSerializer = v200::LiteDB.JsonSerializer;
+using LiteDatabase = v200::LiteDB.LiteDatabase;
+using Logger = v200::LiteDB.Logger;
+using Query = v200::LiteDB.Query;
 
 namespace LiteDB.Shell
 {
-    class ShellEngine_200 : IShellEngine
+    internal class ShellEngine_200 : IShellEngine
     {
         private LiteDatabase _db;
 
-        public Version Version { get { return typeof(LiteDatabase).Assembly.GetName().Version; } }
+        public Version Version
+        {
+            get { return typeof (LiteDatabase).Assembly.GetName().Version; }
+        }
 
         public bool Detect(string filename)
         {
@@ -39,7 +44,7 @@ namespace LiteDB.Shell
         {
             var result = _db.Run(command);
 
-            this.WriteResult(result, display);
+            WriteResult(result, display);
         }
 
         public void Dump(TextWriter writer)
@@ -53,9 +58,9 @@ namespace LiteDB.Shell
 
                 foreach (var index in indexes)
                 {
-                    writer.WriteLine("db.{0}.ensureIndex {1} {2}", 
-                        name, 
-                        index["field"].AsString, 
+                    writer.WriteLine("db.{0}.ensureIndex {1} {2}",
+                        name,
+                        index["field"].AsString,
                         JsonSerializer.Serialize(index["options"].AsDocument));
                 }
 
@@ -82,7 +87,8 @@ namespace LiteDB.Shell
             {
                 foreach (var doc in result.AsArray)
                 {
-                    display.Write(ConsoleColor.Cyan, string.Format("[{0}]:{1}", ++index, display.Pretty ? Environment.NewLine : " "));
+                    display.Write(ConsoleColor.Cyan,
+                        string.Format("[{0}]:{1}", ++index, display.Pretty ? Environment.NewLine : " "));
                     display.WriteLine(ConsoleColor.DarkCyan, JsonSerializer.Serialize(doc, display.Pretty, false));
                 }
 
@@ -102,6 +108,5 @@ namespace LiteDB.Shell
         }
 
         #endregion
-
     }
 }

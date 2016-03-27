@@ -3,11 +3,11 @@
 namespace LiteDB
 {
     /// <summary>
-    /// All is an Index Scan operation
+    ///     All is an Index Scan operation
     /// </summary>
     internal class QueryAll : Query
     {
-        private int _order;
+        private readonly int _order;
 
         public QueryAll(string field, int order)
             : base(field)

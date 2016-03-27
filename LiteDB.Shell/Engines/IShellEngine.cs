@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace LiteDB.Shell
 {
-    interface IShellEngine : IDisposable
+    internal interface IShellEngine : IDisposable
     {
         Version Version { get; }
         bool Detect(string filename);

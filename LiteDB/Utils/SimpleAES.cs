@@ -1,16 +1,21 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LiteDB
 {
     /// <summary>
-    /// Simple Rijndael wrapper to encrypt data pages (based in http://stackoverflow.com/questions/165808/simple-two-way-encryption-for-c-sharp)
+    ///     Simple Rijndael wrapper to encrypt data pages (based in
+    ///     http://stackoverflow.com/questions/165808/simple-two-way-encryption-for-c-sharp)
     /// </summary>
     internal class SimpleAES : IDisposable
     {
-        private static readonly byte[] SALT = new byte[] { 0x16, 0xae, 0xbf, 0x20, 0x01, 0xa0, 0xa9, 0x52, 0x34, 0x1a, 0x45, 0x55, 0x4a, 0xe1, 0x32, 0x1d };
+        private static readonly byte[] SALT =
+        {
+            0x16, 0xae, 0xbf, 0x20, 0x01, 0xa0, 0xa9, 0x52, 0x34, 0x1a, 0x45, 0x55,
+            0x4a, 0xe1, 0x32, 0x1d
+        };
 
         private Rijndael _rijndael;
 
@@ -27,7 +32,7 @@ namespace LiteDB
             }
             finally
             {
-                IDisposable disp = pdb as IDisposable;
+                var disp = pdb as IDisposable;
 
                 if (disp != null)
                 {
@@ -36,8 +41,17 @@ namespace LiteDB
             }
         }
 
+        public void Dispose()
+        {
+            if (_rijndael != null)
+            {
+                _rijndael.Clear();
+                _rijndael = null;
+            }
+        }
+
         /// <summary>
-        /// Encrypt byte array returning new encrypted byte array with same length of original array (PAGE_SIZE)
+        ///     Encrypt byte array returning new encrypted byte array with same length of original array (PAGE_SIZE)
         /// </summary>
         public byte[] Encrypt(byte[] bytes)
         {
@@ -55,7 +69,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Decrypt and byte array returning a new byte array
+        ///     Decrypt and byte array returning a new byte array
         /// </summary>
         public byte[] Decrypt(byte[] encryptedValue)
         {
@@ -66,28 +80,19 @@ namespace LiteDB
                 crypto.Write(encryptedValue, 0, encryptedValue.Length);
                 crypto.FlushFinalBlock();
                 stream.Position = 0;
-                var decryptedBytes = new Byte[stream.Length];
+                var decryptedBytes = new byte[stream.Length];
                 stream.Read(decryptedBytes, 0, decryptedBytes.Length);
                 return decryptedBytes;
             }
         }
 
         /// <summary>
-        /// Hash a password using SHA1 just to verify password
+        ///     Hash a password using SHA1 just to verify password
         /// </summary>
         public static byte[] HashSHA1(string password)
         {
             var sha = new SHA1CryptoServiceProvider();
             return sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-        }
-
-        public void Dispose()
-        {
-            if (_rijndael != null)
-            {
-                _rijndael.Clear();
-                _rijndael = null;
-            }
         }
     }
 }

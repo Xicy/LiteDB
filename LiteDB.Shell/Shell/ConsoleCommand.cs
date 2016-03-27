@@ -6,27 +6,27 @@ namespace LiteDB.Shell
 {
     internal abstract class ConsoleCommand
     {
-        public abstract bool IsCommand(StringScanner s);
-
-        public abstract void Execute(ref IShellEngine engine, StringScanner s, Display display, InputCommand input);
-
-        private static List<ConsoleCommand> _commands = new List<ConsoleCommand>();
+        private static readonly List<ConsoleCommand> _commands = new List<ConsoleCommand>();
 
         static ConsoleCommand()
         {
-            var type = typeof(ConsoleCommand);
+            var type = typeof (ConsoleCommand);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract);
 
             foreach (var t in types)
             {
-                _commands.Add((ConsoleCommand)Activator.CreateInstance(t));
+                _commands.Add((ConsoleCommand) Activator.CreateInstance(t));
             }
         }
 
+        public abstract bool IsCommand(StringScanner s);
+
+        public abstract void Execute(ref IShellEngine engine, StringScanner s, Display display, InputCommand input);
+
         /// <summary>
-        /// If command is a console command, execute and returns true - if not, just returns false
+        ///     If command is a console command, execute and returns true - if not, just returns false
         /// </summary>
         public static bool TryExecute(string command, ref IShellEngine engine, Display display, InputCommand input)
         {

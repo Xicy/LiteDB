@@ -9,7 +9,7 @@
 
         public override void Execute(ref IShellEngine engine, StringScanner s, Display display, InputCommand input)
         {
-            if(engine == null) throw ShellExpcetion.NoDatabase();
+            if (engine == null) throw ShellExpcetion.NoDatabase();
 
             var ver = engine.Version;
 

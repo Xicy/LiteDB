@@ -15,7 +15,7 @@ namespace LiteDB
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
                     var ue = expr.Body as UnaryExpression;
-                    me = ((ue != null) ? ue.Operand : null) as MemberExpression;
+                    me = (ue != null ? ue.Operand : null) as MemberExpression;
                     break;
 
                 default:

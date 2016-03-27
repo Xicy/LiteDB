@@ -4,12 +4,10 @@ using System.Reflection;
 namespace LiteDB
 {
     /// <summary>
-    /// The main exception for LiteDB
+    ///     The main exception for LiteDB
     /// </summary>
     public class LiteException : Exception
     {
-        public int ErrorCode { get; private set; }
-
         public LiteException(string message)
             : base(message)
         {
@@ -18,8 +16,10 @@ namespace LiteDB
         private LiteException(int code, string message, params object[] args)
             : base(string.Format(message, args))
         {
-            this.ErrorCode = code;
+            ErrorCode = code;
         }
+
+        public int ErrorCode { get; private set; }
 
         #region Database Errors
 
@@ -55,7 +55,8 @@ namespace LiteDB
 
         public static LiteException CollectionLimitExceeded(int limit)
         {
-            return new LiteException(106, "This database exceeded the maximum limit of collection names size: {0} bytes", limit);
+            return new LiteException(106, "This database exceeded the maximum limit of collection names size: {0} bytes",
+                limit);
         }
 
         public static LiteException JournalFileFound(string journal)
@@ -70,12 +71,14 @@ namespace LiteDB
 
         public static LiteException IndexLimitExceeded(string collection)
         {
-            return new LiteException(109, "Collection '{0}' exceeded the maximum limit of indices: {1}", collection, CollectionIndex.INDEX_PER_COLLECTION);
+            return new LiteException(109, "Collection '{0}' exceeded the maximum limit of indices: {1}", collection,
+                CollectionIndex.INDEX_PER_COLLECTION);
         }
 
         public static LiteException IndexDuplicateKey(string field, BsonValue key)
         {
-            return new LiteException(110, "Cannot insert duplicate key in unique index '{0}'. The duplicate value is '{1}'", field, key);
+            return new LiteException(110,
+                "Cannot insert duplicate key in unique index '{0}'. The duplicate value is '{1}'", field, key);
         }
 
         public static LiteException IndexKeyTooLong()
@@ -119,12 +122,15 @@ namespace LiteDB
 
         public static LiteException DocumentMaxDepth(int depth)
         {
-            return new LiteException(201, "Document has more than {0} nested documents. Check for circular references (use DbRef)", depth);
+            return new LiteException(201,
+                "Document has more than {0} nested documents. Check for circular references (use DbRef)", depth);
         }
 
         public static LiteException InvalidCtor(Type type)
         {
-            return new LiteException(202, "Failed to create instance for type '{0}' from assembly '{1}'. Checks if the class has a public constructor with no parameters", type.FullName, type.AssemblyQualifiedName);
+            return new LiteException(202,
+                "Failed to create instance for type '{0}' from assembly '{1}'. Checks if the class has a public constructor with no parameters",
+                type.FullName, type.AssemblyQualifiedName);
         }
 
         public static LiteException UnexpectedToken(string token)

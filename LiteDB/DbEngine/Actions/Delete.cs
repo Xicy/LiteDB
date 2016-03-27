@@ -5,11 +5,11 @@ namespace LiteDB
     internal partial class DbEngine : IDisposable
     {
         /// <summary>
-        /// Implements delete based on a query result
+        ///     Implements delete based on a query result
         /// </summary>
         public int Delete(string colName, Query query)
         {
-            return this.Transaction<int>(colName, false, (col) =>
+            return Transaction(colName, false, col =>
             {
                 if (col == null) return 0;
 

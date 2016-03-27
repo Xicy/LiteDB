@@ -12,8 +12,8 @@ namespace LiteDB.Tests
         // Get a unique database name in TestResults folder
         public static string RandomFile(string ext = "db")
         {
-            var path = System.IO.Path.GetFullPath(
-                System.IO.Directory.GetCurrentDirectory() +
+            var path = Path.GetFullPath(
+                Directory.GetCurrentDirectory() +
                 string.Format("../../../../TestResults/test-{0}.{1}", Guid.NewGuid(), ext));
 
             _files.Add(path);
@@ -23,7 +23,7 @@ namespace LiteDB.Tests
 
         public static void DeleteFiles()
         {
-            foreach(var f in _files)
+            foreach (var f in _files)
             {
                 File.Delete(f);
             }
@@ -34,9 +34,12 @@ namespace LiteDB.Tests
             int minSentences, int maxSentences,
             int numParagraphs)
         {
-            var words = new[] { "lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
+            var words = new[]
+            {
+                "lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
                 "adipiscing", "elit", "sed", "diam", "nonummy", "nibh", "euismod",
-                "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat" };
+                "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat"
+            };
 
             var rand = new Random(DateTime.Now.Millisecond);
             var numSentences = rand.Next(maxSentences - minSentences) + minSentences + 1;
@@ -44,13 +47,16 @@ namespace LiteDB.Tests
 
             var result = new StringBuilder();
 
-            for (int p = 0; p < numParagraphs; p++)
+            for (var p = 0; p < numParagraphs; p++)
             {
-                for (int s = 0; s < numSentences; s++)
+                for (var s = 0; s < numSentences; s++)
                 {
-                    for (int w = 0; w < numWords; w++)
+                    for (var w = 0; w < numWords; w++)
                     {
-                        if (w > 0) { result.Append(" "); }
+                        if (w > 0)
+                        {
+                            result.Append(" ");
+                        }
                         result.Append(words[rand.Next(words.Length)]);
                     }
                     result.Append(". ");

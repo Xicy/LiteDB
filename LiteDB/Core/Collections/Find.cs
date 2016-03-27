@@ -10,7 +10,7 @@ namespace LiteDB
         #region Find
 
         /// <summary>
-        /// Find documents inside a collection using Query object. Must have indexes in query expression
+        ///     Find documents inside a collection using Query object. Must have indexes in query expression
         /// </summary>
         public IEnumerable<T> Find(Query query, int skip = 0, int limit = int.MaxValue)
         {
@@ -25,9 +25,9 @@ namespace LiteDB
             {
                 try
                 {
-                    var docs = _engine.Find(_name, query, skip, limit);
+                    var docs = _engine.Find(Name, query, skip, limit);
 
-                    enumerator = (IEnumerator<BsonDocument>)docs.GetEnumerator();
+                    enumerator = docs.GetEnumerator();
 
                     more = enumerator.MoveNext();
 
@@ -57,16 +57,15 @@ namespace LiteDB
                 var obj = _mapper.ToObject<T>(enumerator.Current);
 
                 yield return obj;
-            }
-            while (more = enumerator.MoveNext());
+            } while (more = enumerator.MoveNext());
         }
 
         /// <summary>
-        /// Find documents inside a collection using Linq expression. Must have indexes in linq expression
+        ///     Find documents inside a collection using Linq expression. Must have indexes in linq expression
         /// </summary>
         public IEnumerable<T> Find(Expression<Func<T, bool>> predicate, int skip = 0, int limit = int.MaxValue)
         {
-            return this.Find(_visitor.Visit(predicate), skip, limit);
+            return Find(_visitor.Visit(predicate), skip, limit);
         }
 
         #endregion Find
@@ -74,37 +73,37 @@ namespace LiteDB
         #region FindById + One + All
 
         /// <summary>
-        /// Find a document using Document Id. Returns null if not found.
+        ///     Find a document using Document Id. Returns null if not found.
         /// </summary>
         public T FindById(BsonValue id)
         {
             if (id == null || id.IsNull) throw new ArgumentNullException("id");
 
-            return this.Find(Query.EQ("_id", id)).SingleOrDefault();
+            return Find(Query.EQ("_id", id)).SingleOrDefault();
         }
 
         /// <summary>
-        /// Find the first document using Query object. Returns null if not found. Must have index on query expression.
+        ///     Find the first document using Query object. Returns null if not found. Must have index on query expression.
         /// </summary>
         public T FindOne(Query query)
         {
-            return this.Find(query).FirstOrDefault();
+            return Find(query).FirstOrDefault();
         }
 
         /// <summary>
-        /// Find the first document using Linq expression. Returns null if not found. Must have indexes on predicate.
+        ///     Find the first document using Linq expression. Returns null if not found. Must have indexes on predicate.
         /// </summary>
         public T FindOne(Expression<Func<T, bool>> predicate)
         {
-            return this.Find(_visitor.Visit(predicate)).FirstOrDefault();
+            return Find(_visitor.Visit(predicate)).FirstOrDefault();
         }
 
         /// <summary>
-        /// Returns all documents inside collection order by _id index.
+        ///     Returns all documents inside collection order by _id index.
         /// </summary>
         public IEnumerable<T> FindAll()
         {
-            return this.Find(Query.All());
+            return Find(Query.All());
         }
 
         #endregion FindById + One + All

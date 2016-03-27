@@ -84,7 +84,7 @@ namespace LiteDB.Tests
                 MyString = "MyString",
                 MyInternalPropertyNamed = "InternalPropertyNamed",
                 MyInternalPropertyNotSerializable = "InternalPropertyNotSerializable",
-                MyInternalPropertySerializable = "InternalPropertySerializable",
+                MyInternalPropertySerializable = "InternalPropertySerializable"
             };
 
             c.SetProtectedProperties("ProtectedProperties");

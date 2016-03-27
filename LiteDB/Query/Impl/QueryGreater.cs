@@ -4,8 +4,8 @@ namespace LiteDB
 {
     internal class QueryGreater : Query
     {
-        private BsonValue _value;
-        private bool _equals;
+        private readonly bool _equals;
+        private readonly BsonValue _value;
 
         public QueryGreater(string field, BsonValue value, bool equals)
             : base(field)
@@ -18,7 +18,7 @@ namespace LiteDB
         {
             // find first indexNode
             var value = _value.Normalize(index.Options);
-            var node = indexer.Find(index, value, true, Query.Ascending);
+            var node = indexer.Find(index, value, true, Ascending);
 
             if (node == null) yield break;
 

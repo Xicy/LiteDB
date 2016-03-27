@@ -1,7 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -44,7 +42,7 @@ namespace LiteDB.Tests
 
                     Assert.Fail(); // can't work
                 }
-                catch(LiteException ex)
+                catch (LiteException ex)
                 {
                     Assert.IsTrue(ex.ErrorCode == 123); // wrong password
                 }

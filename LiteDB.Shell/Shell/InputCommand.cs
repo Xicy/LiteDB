@@ -6,6 +6,15 @@ namespace LiteDB.Shell
 {
     public class InputCommand
     {
+        public InputCommand()
+        {
+            Queue = new Queue<string>();
+            History = new List<string>();
+            Timer = new Stopwatch();
+            Running = true;
+            AutoExit = false; // run "exit" command when there is not more command in queue
+        }
+
         public Queue<string> Queue { get; set; }
         public List<string> History { get; set; }
         public Stopwatch Timer { get; set; }
@@ -14,27 +23,18 @@ namespace LiteDB.Shell
 
         public Action<string> OnWrite { get; set; }
 
-        public InputCommand()
-        {
-            this.Queue = new Queue<string>();
-            this.History = new List<string>();
-            this.Timer = new Stopwatch();
-            this.Running = true;
-            this.AutoExit = false; // run "exit" command when there is not more command in queue
-        }
-
         public string ReadCommand()
         {
-            if (this.Timer.IsRunning)
+            if (Timer.IsRunning)
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                this.Write(this.Timer.ElapsedMilliseconds.ToString("0000") + " ");
+                Write(Timer.ElapsedMilliseconds.ToString("0000") + " ");
             }
 
             Console.ForegroundColor = ConsoleColor.White;
-            this.Write("> ");
+            Write("> ");
 
-            var cmd = this.ReadLine();
+            var cmd = ReadLine();
 
             // suport for multiline command
             if (cmd.StartsWith("/"))
@@ -43,15 +43,15 @@ namespace LiteDB.Shell
 
                 while (!cmd.EndsWith("/"))
                 {
-                    if (this.Timer.IsRunning)
+                    if (Timer.IsRunning)
                     {
-                        this.Write("     ");
+                        Write("     ");
                     }
 
                     Console.ForegroundColor = ConsoleColor.White;
-                    this.Write("| ");
+                    Write("| ");
 
-                    var line = this.ReadLine();
+                    var line = ReadLine();
                     cmd += Environment.NewLine + line;
                 }
 
@@ -60,39 +60,39 @@ namespace LiteDB.Shell
 
             cmd = cmd.Trim();
 
-            this.History.Add(cmd);
+            History.Add(cmd);
 
-            if (this.Timer.IsRunning)
+            if (Timer.IsRunning)
             {
-                this.Timer.Reset();
-                this.Timer.Start();
+                Timer.Reset();
+                Timer.Start();
             }
 
             return cmd.Trim();
         }
 
         /// <summary>
-        /// Read a line from queue or user
+        ///     Read a line from queue or user
         /// </summary>
         private string ReadLine()
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            if (this.Queue.Count > 0)
+            if (Queue.Count > 0)
             {
-                var cmd = this.Queue.Dequeue();
-                this.Write(cmd + Environment.NewLine);
+                var cmd = Queue.Dequeue();
+                Write(cmd + Environment.NewLine);
                 return cmd;
             }
             else
             {
-                if (this.AutoExit) return "exit";
+                if (AutoExit) return "exit";
 
                 var cmd = Console.ReadLine();
 
-                if (this.OnWrite != null)
+                if (OnWrite != null)
                 {
-                    this.OnWrite(cmd + Environment.NewLine);
+                    OnWrite(cmd + Environment.NewLine);
                 }
 
                 return cmd;
@@ -103,9 +103,9 @@ namespace LiteDB.Shell
         {
             Console.Write(text);
 
-            if (this.OnWrite != null)
+            if (OnWrite != null)
             {
-                this.OnWrite(text);
+                OnWrite(text);
             }
         }
     }

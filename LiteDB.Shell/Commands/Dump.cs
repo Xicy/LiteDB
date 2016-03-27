@@ -19,7 +19,7 @@ namespace LiteDB.Shell.Commands
             var filename = s.Scan(@".+").Trim();
 
             //dump import
-            if(direction == "<")
+            if (direction == "<")
             {
                 using (var reader = new StreamReader(filename, Encoding.UTF8))
                 {
@@ -36,7 +36,7 @@ namespace LiteDB.Shell.Commands
                 using (var writer = new StreamWriter(filename, false, Encoding.UTF8, 65536))
                 {
                     writer.AutoFlush = true;
-                    writer.WriteLine("-- LiteDB v{0}.{1}.{2} dump file @ {3}", 
+                    writer.WriteLine("-- LiteDB v{0}.{1}.{2} dump file @ {3}",
                         engine.Version.Major, engine.Version.Minor, engine.Version.Build,
                         DateTime.Now);
                     engine.Dump(writer);

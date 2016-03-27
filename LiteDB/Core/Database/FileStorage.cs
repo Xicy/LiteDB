@@ -4,10 +4,10 @@ namespace LiteDB
 {
     public partial class LiteDatabase : IDisposable
     {
-        private LiteFileStorage _fs = null;
+        private LiteFileStorage _fs;
 
         /// <summary>
-        /// Returns a special collection for storage files/stream inside datafile
+        ///     Returns a special collection for storage files/stream inside datafile
         /// </summary>
         public LiteFileStorage FileStorage
         {

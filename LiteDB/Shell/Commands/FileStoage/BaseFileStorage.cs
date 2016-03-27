@@ -8,7 +8,7 @@
         }
 
         /// <summary>
-        /// Read Id file
+        ///     Read Id file
         /// </summary>
         public string ReadId(StringScanner s)
         {

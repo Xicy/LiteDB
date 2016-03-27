@@ -5,41 +5,42 @@ using System.Text.RegularExpressions;
 namespace LiteDB.Shell
 {
     /// <summary>
-    /// Very simple class that parse command line arguments 
+    ///     Very simple class that parse command line arguments
     /// </summary>
     internal class OptionSet
     {
-        private Dictionary<string, OptionsParam> _options = new Dictionary<string, OptionsParam>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, OptionsParam> _options =
+            new Dictionary<string, OptionsParam>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Register all extra non parameter (without -- or /)
+        ///     Register all extra non parameter (without -- or /)
         /// </summary>
         public void Register(Action<string> action)
         {
-            _options.Add("_extra_", 
-                new OptionsParam { Action = (value) => action((string)value) });
+            _options.Add("_extra_",
+                new OptionsParam {Action = value => action((string) value)});
         }
 
         /// <summary>
-        /// Register a parameter with value and data type (like --path "C:\temp\times.txt")
+        ///     Register a parameter with value and data type (like --path "C:\temp\times.txt")
         /// </summary>
         public void Register<T>(string key, Action<T> action)
         {
-            _options.Add(key, 
-                new OptionsParam { Action = (value) => action((T)value), Type = typeof(T) });
+            _options.Add(key,
+                new OptionsParam {Action = value => action((T) value), Type = typeof (T)});
         }
 
         /// <summary>
-        /// Register a parameter without any value (like --help)
+        ///     Register a parameter without any value (like --help)
         /// </summary>
         public void Register(string key, Action action)
         {
-            _options.Add(key, 
-                new OptionsParam { Action = (value) => action() });
+            _options.Add(key,
+                new OptionsParam {Action = value => action()});
         }
 
         /// <summary>
-        /// Parse command line args calling register parameters
+        ///     Parse command line args calling register parameters
         /// </summary>
         public void Parse(string[] args)
         {
@@ -63,7 +64,7 @@ namespace LiteDB.Shell
                     if (!_options.TryGetValue(key, out param)) continue;
 
                     // parameterless
-                    if(param.Type == null)
+                    if (param.Type == null)
                     {
                         param.Action(null);
                         continue;
@@ -73,7 +74,7 @@ namespace LiteDB.Shell
                     if (equals.Length > 0)
                     {
                         var value = arg.Substring(match.Value.Length);
-                        var val = (object)Convert.ChangeType(value, param.Type);
+                        var val = Convert.ChangeType(value, param.Type);
                         param.Action(val);
                     }
                     else
@@ -82,7 +83,7 @@ namespace LiteDB.Shell
                         if (i < args.Length - 1)
                         {
                             var value = args[++i];
-                            var val = (object)Convert.ChangeType(value, param.Type);
+                            var val = Convert.ChangeType(value, param.Type);
                             param.Action(val);
                         }
                         else
@@ -94,7 +95,7 @@ namespace LiteDB.Shell
                 else
                 {
                     // call extra
-                    if(_options.TryGetValue("_extra_", out param))
+                    if (_options.TryGetValue("_extra_", out param))
                     {
                         param.Action(arg);
                     }

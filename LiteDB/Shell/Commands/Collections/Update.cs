@@ -4,15 +4,15 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "update");
+            return IsCollectionCommand(s, "update");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
+            var col = ReadCollection(engine, s);
             var doc = JsonSerializer.Deserialize(s).AsDocument;
 
-            return engine.Update(col, new BsonDocument[] { doc });
+            return engine.Update(col, new[] {doc});
         }
     }
 }

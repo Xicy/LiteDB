@@ -5,155 +5,152 @@ namespace LiteDB
 {
     internal unsafe class ByteWriter
     {
-        private byte[] _buffer;
-        private int _pos;
-
-        public byte[] Buffer { get { return _buffer; } }
-
-        public int Position { get { return _pos; } }
-
         public ByteWriter(int length)
         {
-            _buffer = new byte[length];
-            _pos = 0;
+            Buffer = new byte[length];
+            Position = 0;
         }
 
         public ByteWriter(byte[] buffer)
         {
-            _buffer = buffer;
-            _pos = 0;
+            Buffer = buffer;
+            Position = 0;
         }
+
+        public byte[] Buffer { get; }
+
+        public int Position { get; private set; }
 
         public void Skip(int length)
         {
-            _pos += length;
+            Position += length;
         }
 
         #region Native data types
 
-        public void Write(Byte value)
+        public void Write(byte value)
         {
-            _buffer[_pos] = value;
+            Buffer[Position] = value;
 
-            _pos++;
+            Position++;
         }
 
-        public void Write(Boolean value)
+        public void Write(bool value)
         {
-            _buffer[_pos] = value ? (byte)1 : (byte)0;
+            Buffer[Position] = value ? (byte) 1 : (byte) 0;
 
-            _pos++;
+            Position++;
         }
 
-        public void Write(UInt16 value)
+        public void Write(ushort value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
 
-            _pos += 2;
+            Position += 2;
         }
 
-        public void Write(UInt32 value)
+        public void Write(uint value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
-            _buffer[_pos + 2] = pi[2];
-            _buffer[_pos + 3] = pi[3];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
+            Buffer[Position + 2] = pi[2];
+            Buffer[Position + 3] = pi[3];
 
-            _pos += 4;
+            Position += 4;
         }
 
-        public void Write(UInt64 value)
+        public void Write(ulong value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
-            _buffer[_pos + 2] = pi[2];
-            _buffer[_pos + 3] = pi[3];
-            _buffer[_pos + 4] = pi[4];
-            _buffer[_pos + 5] = pi[5];
-            _buffer[_pos + 6] = pi[6];
-            _buffer[_pos + 7] = pi[7];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
+            Buffer[Position + 2] = pi[2];
+            Buffer[Position + 3] = pi[3];
+            Buffer[Position + 4] = pi[4];
+            Buffer[Position + 5] = pi[5];
+            Buffer[Position + 6] = pi[6];
+            Buffer[Position + 7] = pi[7];
 
-            _pos += 8;
+            Position += 8;
         }
 
-        public void Write(Int16 value)
+        public void Write(short value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
 
-            _pos += 2;
+            Position += 2;
         }
 
-        public void Write(Int32 value)
+        public void Write(int value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
-            _buffer[_pos + 2] = pi[2];
-            _buffer[_pos + 3] = pi[3];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
+            Buffer[Position + 2] = pi[2];
+            Buffer[Position + 3] = pi[3];
 
-            _pos += 4;
+            Position += 4;
         }
 
-        public void Write(Int64 value)
+        public void Write(long value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
-            _buffer[_pos + 2] = pi[2];
-            _buffer[_pos + 3] = pi[3];
-            _buffer[_pos + 4] = pi[4];
-            _buffer[_pos + 5] = pi[5];
-            _buffer[_pos + 6] = pi[6];
-            _buffer[_pos + 7] = pi[7];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
+            Buffer[Position + 2] = pi[2];
+            Buffer[Position + 3] = pi[3];
+            Buffer[Position + 4] = pi[4];
+            Buffer[Position + 5] = pi[5];
+            Buffer[Position + 6] = pi[6];
+            Buffer[Position + 7] = pi[7];
 
-            _pos += 8;
+            Position += 8;
         }
 
-        public void Write(Single value)
+        public void Write(float value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
-            _buffer[_pos + 2] = pi[2];
-            _buffer[_pos + 3] = pi[3];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
+            Buffer[Position + 2] = pi[2];
+            Buffer[Position + 3] = pi[3];
 
-            _pos += 4;
+            Position += 4;
         }
 
-        public void Write(Double value)
+        public void Write(double value)
         {
-            byte* pi = (byte*)&value;
+            var pi = (byte*) &value;
 
-            _buffer[_pos + 0] = pi[0];
-            _buffer[_pos + 1] = pi[1];
-            _buffer[_pos + 2] = pi[2];
-            _buffer[_pos + 3] = pi[3];
-            _buffer[_pos + 4] = pi[4];
-            _buffer[_pos + 5] = pi[5];
-            _buffer[_pos + 6] = pi[6];
-            _buffer[_pos + 7] = pi[7];
+            Buffer[Position + 0] = pi[0];
+            Buffer[Position + 1] = pi[1];
+            Buffer[Position + 2] = pi[2];
+            Buffer[Position + 3] = pi[3];
+            Buffer[Position + 4] = pi[4];
+            Buffer[Position + 5] = pi[5];
+            Buffer[Position + 6] = pi[6];
+            Buffer[Position + 7] = pi[7];
 
-            _pos += 8;
+            Position += 8;
         }
 
-        public void Write(Byte[] value)
+        public void Write(byte[] value)
         {
-            System.Buffer.BlockCopy(value, 0, _buffer, _pos, value.Length);
+            System.Buffer.BlockCopy(value, 0, Buffer, Position, value.Length);
 
-            _pos += value.Length;
+            Position += value.Length;
         }
 
         #endregion Native data types
@@ -163,41 +160,41 @@ namespace LiteDB
         public void Write(string value)
         {
             var bytes = Encoding.UTF8.GetBytes(value);
-            this.Write(bytes.Length);
-            this.Write(bytes);
+            Write(bytes.Length);
+            Write(bytes);
         }
 
         public void Write(string value, int length)
         {
             var bytes = Encoding.UTF8.GetBytes(value);
             if (bytes.Length != length) throw new ArgumentException("Invalid string length");
-            this.Write(bytes);
+            Write(bytes);
         }
 
         public void Write(DateTime value)
         {
-            this.Write(value.Ticks);
+            Write(value.Ticks);
         }
 
         public void Write(Guid value)
         {
-            this.Write(value.ToByteArray());
+            Write(value.ToByteArray());
         }
 
         public void Write(ObjectId value)
         {
-            this.Write(value.ToByteArray());
+            Write(value.ToByteArray());
         }
 
         public void Write(PageAddress value)
         {
-            this.Write(value.PageID);
-            this.Write(value.Index);
+            Write(value.PageID);
+            Write(value.Index);
         }
 
         public void WriteBsonValue(BsonValue value, ushort length)
         {
-            this.Write((byte)value.Type);
+            Write((byte) value.Type);
 
             switch (value.Type)
             {
@@ -206,23 +203,46 @@ namespace LiteDB
                 case BsonType.MaxValue:
                     break;
 
-                case BsonType.Int32: this.Write((Int32)value.RawValue); break;
-                case BsonType.Int64: this.Write((Int64)value.RawValue); break;
-                case BsonType.Double: this.Write((Double)value.RawValue); break;
+                case BsonType.Int32:
+                    Write((int) value.RawValue);
+                    break;
+                case BsonType.Int64:
+                    Write((long) value.RawValue);
+                    break;
+                case BsonType.Double:
+                    Write((double) value.RawValue);
+                    break;
 
-                case BsonType.String: this.Write((String)value.RawValue, length); break;
+                case BsonType.String:
+                    Write((string) value.RawValue, length);
+                    break;
 
-                case BsonType.Document: new BsonWriter().WriteDocument(this, value.AsDocument); break;
-                case BsonType.Array: new BsonWriter().WriteArray(this, value.AsArray); break;
+                case BsonType.Document:
+                    new BsonWriter().WriteDocument(this, value.AsDocument);
+                    break;
+                case BsonType.Array:
+                    new BsonWriter().WriteArray(this, value.AsArray);
+                    break;
 
-                case BsonType.Binary: this.Write((Byte[])value.RawValue); break;
-                case BsonType.ObjectId: this.Write((ObjectId)value.RawValue); break;
-                case BsonType.Guid: this.Write((Guid)value.RawValue); break;
+                case BsonType.Binary:
+                    Write((byte[]) value.RawValue);
+                    break;
+                case BsonType.ObjectId:
+                    Write((ObjectId) value.RawValue);
+                    break;
+                case BsonType.Guid:
+                    Write((Guid) value.RawValue);
+                    break;
 
-                case BsonType.Boolean: this.Write((Boolean)value.RawValue); break;
-                case BsonType.DateTime: this.Write((DateTime)value.RawValue); break;
+                case BsonType.Boolean:
+                    Write((bool) value.RawValue);
+                    break;
+                case BsonType.DateTime:
+                    Write((DateTime) value.RawValue);
+                    break;
 
-                default: throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
             }
         }
 

@@ -9,7 +9,7 @@ namespace LiteDB.Shell.Commands
         public Regex FieldPattern = new Regex(@"[\w$\.-]+\s*");
 
         /// <summary>
-        /// Read collection name from db.(colname).(command)
+        ///     Read collection name from db.(colname).(command)
         /// </summary>
         public string ReadCollection(DbEngine db, StringScanner s)
         {
@@ -52,41 +52,52 @@ namespace LiteDB.Shell.Commands
                 return Query.All();
             }
 
-            return this.ReadInlineQuery(s);
+            return ReadInlineQuery(s);
         }
 
         private Query ReadInlineQuery(StringScanner s)
         {
-            var left = this.ReadOneQuery(s);
+            var left = ReadOneQuery(s);
             var oper = s.Scan(@"\s+(and|or)\s+").Trim();
 
             // there is no right side
             if (oper.Length == 0) return left;
 
-            var right = this.ReadInlineQuery(s);
+            var right = ReadInlineQuery(s);
 
             return oper == "and" ? Query.And(left, right) : Query.Or(left, right);
         }
 
         private Query ReadOneQuery(StringScanner s)
         {
-            var field = s.Scan(this.FieldPattern).Trim().ThrowIfEmpty("Invalid field name");
+            var field = s.Scan(FieldPattern).Trim().ThrowIfEmpty("Invalid field name");
             var oper = s.Scan(@"(=|!=|>=|<=|>|<|like|in|between|contains)").ThrowIfEmpty("Invalid query operator");
             var value = JsonSerializer.Deserialize(s);
 
             switch (oper)
             {
-                case "=": return Query.EQ(field, value);
-                case "!=": return Query.Not(field, value);
-                case ">": return Query.GT(field, value);
-                case ">=": return Query.GTE(field, value);
-                case "<": return Query.LT(field, value);
-                case "<=": return Query.LTE(field, value);
-                case "like": return Query.StartsWith(field, value);
-                case "in": return Query.In(field, value.AsArray);
-                case "between": return Query.Between(field, value.AsArray[0], value.AsArray[1]);
-                case "contains": return Query.Contains(field, value);
-                default: throw new LiteException("Invalid query operator");
+                case "=":
+                    return Query.EQ(field, value);
+                case "!=":
+                    return Query.Not(field, value);
+                case ">":
+                    return Query.GT(field, value);
+                case ">=":
+                    return Query.GTE(field, value);
+                case "<":
+                    return Query.LT(field, value);
+                case "<=":
+                    return Query.LTE(field, value);
+                case "like":
+                    return Query.StartsWith(field, value);
+                case "in":
+                    return Query.In(field, value.AsArray);
+                case "between":
+                    return Query.Between(field, value.AsArray[0], value.AsArray[1]);
+                case "contains":
+                    return Query.Contains(field, value);
+                default:
+                    throw new LiteException("Invalid query operator");
             }
         }
     }

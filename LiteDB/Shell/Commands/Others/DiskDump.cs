@@ -22,13 +22,10 @@ namespace LiteDB.Shell.Commands
                     start.Length == 0 ? 0 : Convert.ToUInt32(start),
                     end.Length == 0 ? uint.MaxValue : Convert.ToUInt32(end)).ToString();
             }
-            else
-            {
-                var col = s.Scan(@"[\w-]+");
-                var field = s.Scan(@"\s+\w+").Trim();
+            var col = s.Scan(@"[\w-]+");
+            var field = s.Scan(@"\s+\w+").Trim();
 
-                return engine.DumpIndex(col, field).ToString();
-            }
+            return engine.DumpIndex(col, field).ToString();
         }
     }
 }

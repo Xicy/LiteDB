@@ -4,20 +4,23 @@ using System.Text;
 namespace LiteDB
 {
     /// <summary>
-    /// Internal class to deserialize a byte[] into a BsonDocument using BSON data format
+    ///     Internal class to deserialize a byte[] into a BsonDocument using BSON data format
     /// </summary>
     internal class BsonReader
     {
+        // use byte array buffer for CString (key-only)
+        private readonly byte[] _strBuffer = new byte[1000];
+
         /// <summary>
-        /// Main method - deserialize using ByteReader helper
+        ///     Main method - deserialize using ByteReader helper
         /// </summary>
         public BsonDocument Deserialize(byte[] bson)
         {
-            return this.ReadDocument(new ByteReader(bson));
+            return ReadDocument(new ByteReader(bson));
         }
 
         /// <summary>
-        /// Read a BsonDocument from reader
+        ///     Read a BsonDocument from reader
         /// </summary>
         public BsonDocument ReadDocument(ByteReader reader)
         {
@@ -28,7 +31,7 @@ namespace LiteDB
             while (reader.Position < end)
             {
                 string name;
-                var value = this.ReadElement(reader, out name);
+                var value = ReadElement(reader, out name);
                 obj.RawValue[name] = value;
             }
 
@@ -38,7 +41,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Read an BsonArray from reader
+        ///     Read an BsonArray from reader
         /// </summary>
         public BsonArray ReadArray(ByteReader reader)
         {
@@ -49,7 +52,7 @@ namespace LiteDB
             while (reader.Position < end)
             {
                 string name;
-                var value = this.ReadElement(reader, out name);
+                var value = ReadElement(reader, out name);
                 arr.Add(value);
             }
 
@@ -59,30 +62,30 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Reads an element (key-value) from an reader
+        ///     Reads an element (key-value) from an reader
         /// </summary>
         private BsonValue ReadElement(ByteReader reader, out string name)
         {
             var type = reader.ReadByte();
-            name = this.ReadCString(reader);
+            name = ReadCString(reader);
 
             if (type == 0x01) // Double
             {
                 return reader.ReadDouble();
             }
-            else if (type == 0x02) // String
+            if (type == 0x02) // String
             {
-                return this.ReadString(reader);
+                return ReadString(reader);
             }
-            else if (type == 0x03) // Document
+            if (type == 0x03) // Document
             {
-                return this.ReadDocument(reader);
+                return ReadDocument(reader);
             }
-            else if (type == 0x04) // Array
+            if (type == 0x04) // Array
             {
-                return this.ReadArray(reader);
+                return ReadArray(reader);
             }
-            else if (type == 0x05) // Binary
+            if (type == 0x05) // Binary
             {
                 var length = reader.ReadInt32();
                 var subType = reader.ReadByte();
@@ -90,8 +93,10 @@ namespace LiteDB
 
                 switch (subType)
                 {
-                    case 0x00: return bytes;
-                    case 0x04: return new Guid(bytes);
+                    case 0x00:
+                        return bytes;
+                    case 0x04:
+                        return new Guid(bytes);
                 }
             }
             else if (type == 0x07) // ObjectId
@@ -144,16 +149,13 @@ namespace LiteDB
             return Encoding.UTF8.GetString(bytes);
         }
 
-        // use byte array buffer for CString (key-only)
-        private byte[] _strBuffer = new byte[1000];
-
         private string ReadCString(ByteReader reader)
         {
             var pos = 0;
 
             while (true)
             {
-                byte buf = reader.ReadByte();
+                var buf = reader.ReadByte();
                 if (buf == 0x00) break;
                 _strBuffer[pos++] = buf;
             }

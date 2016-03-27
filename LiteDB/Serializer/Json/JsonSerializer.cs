@@ -6,14 +6,14 @@ using System.Text;
 namespace LiteDB
 {
     /// <summary>
-    /// Static class for serialize/deserialize BsonDocuments into json extended format
+    ///     Static class for serialize/deserialize BsonDocuments into json extended format
     /// </summary>
     public class JsonSerializer
     {
         #region Serialize
 
         /// <summary>
-        /// Json serialize a BsonValue into a String
+        ///     Json serialize a BsonValue into a String
         /// </summary>
         public static string Serialize(BsonValue value, bool pretty = false, bool writeBinary = true)
         {
@@ -28,7 +28,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Json serialize a BsonValue into a TextWriter
+        ///     Json serialize a BsonValue into a TextWriter
         /// </summary>
         public static void Serialize(BsonValue value, TextWriter writer, bool pretty = false, bool writeBinary = true)
         {
@@ -43,7 +43,7 @@ namespace LiteDB
         #region Deserialize
 
         /// <summary>
-        /// Deserialize a Json string into a BsonValue
+        ///     Deserialize a Json string into a BsonValue
         /// </summary>
         public static BsonValue Deserialize(string json)
         {
@@ -58,7 +58,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Deserialize a Json TextReader into a BsonValue
+        ///     Deserialize a Json TextReader into a BsonValue
         /// </summary>
         public static BsonValue Deserialize(TextReader reader)
         {
@@ -70,7 +70,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Deserialize a json array as an IEnumerable of BsonValue
+        ///     Deserialize a json array as an IEnumerable of BsonValue
         /// </summary>
         public static IEnumerable<BsonValue> DeserializeArray(string json)
         {
@@ -82,7 +82,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Deserialize a json array as an IEnumerable of BsonValue reading on demand TextReader
+        ///     Deserialize a json array as an IEnumerable of BsonValue reading on demand TextReader
         /// </summary>
         public static IEnumerable<BsonValue> DeserializeArray(TextReader reader)
         {
@@ -94,7 +94,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Deserialize a json using a StringScanner and returns BsonValue
+        ///     Deserialize a json using a StringScanner and returns BsonValue
         /// </summary>
         internal static BsonValue Deserialize(StringScanner s)
         {
@@ -108,7 +108,7 @@ namespace LiteDB
 
                 var value = reader.Deserialize();
 
-                s.Seek((int)(reader.Position - 1));
+                s.Seek((int) (reader.Position - 1));
 
                 return value;
             }

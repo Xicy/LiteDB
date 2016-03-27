@@ -5,7 +5,7 @@ namespace LiteDB
 {
     internal class QueryIn : Query
     {
-        private IEnumerable<BsonValue> _values;
+        private readonly IEnumerable<BsonValue> _values;
 
         public QueryIn(string field, IEnumerable<BsonValue> values)
             : base(field)
@@ -17,7 +17,7 @@ namespace LiteDB
         {
             foreach (var value in _values.Distinct())
             {
-                foreach (var node in Query.EQ(this.Field, value).ExecuteIndex(indexer, index))
+                foreach (var node in EQ(Field, value).ExecuteIndex(indexer, index))
                 {
                     yield return node;
                 }

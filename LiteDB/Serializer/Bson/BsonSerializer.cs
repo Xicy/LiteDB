@@ -3,7 +3,7 @@
 namespace LiteDB
 {
     /// <summary>
-    /// Class to call method for convert BsonDocument to/from byte[] - based on http://bsonspec.org/spec.html
+    ///     Class to call method for convert BsonDocument to/from byte[] - based on http://bsonspec.org/spec.html
     /// </summary>
     public class BsonSerializer
     {

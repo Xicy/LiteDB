@@ -4,13 +4,13 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "drop[iI]ndex");
+            return IsCollectionCommand(s, "drop[iI]ndex");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
-            var index = s.Scan(this.FieldPattern).Trim();
+            var col = ReadCollection(engine, s);
+            var index = s.Scan(FieldPattern).Trim();
 
             return engine.DropIndex(col, index);
         }

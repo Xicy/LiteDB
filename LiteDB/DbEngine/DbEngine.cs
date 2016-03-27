@@ -3,30 +3,85 @@
 namespace LiteDB
 {
     /// <summary>
-    /// A internal class that take care of all engine data structure access - it´s basic implementation of a NoSql database
-    /// Its isolated from complete solution - works on low level only
+    ///     A internal class that take care of all engine data structure access - it´s basic implementation of a NoSql database
+    ///     Its isolated from complete solution - works on low level only
     /// </summary>
     internal partial class DbEngine : IDisposable
     {
+        public void Dispose()
+        {
+            _disk.Dispose();
+        }
+
+        /// <summary>
+        ///     Get the collection page only when nedded. Gets from pager always to garantee that wil be the last (in case of clear
+        ///     cache will get a new one - pageID never changes)
+        /// </summary>
+        private CollectionPage GetCollectionPage(string name, bool addIfNotExits)
+        {
+            // before get a collection, avoid dirty reads
+            _transaction.AvoidDirtyRead();
+
+            // search my page on collection service
+            var col = _collections.Get(name);
+
+            if (col == null && addIfNotExits)
+            {
+                _log.Write(Logger.COMMAND, "create new collection '{0}'", name);
+
+                col = _collections.Add(name);
+            }
+
+            return col;
+        }
+
+        /// <summary>
+        ///     Encapsulate all transaction commands in same data structure
+        /// </summary>
+        private T Transaction<T>(string colName, bool addIfNotExists, Func<CollectionPage, T> action)
+        {
+            lock (_locker)
+            {
+                try
+                {
+                    _transaction.Begin();
+
+                    var col = GetCollectionPage(colName, addIfNotExists);
+
+                    var result = action(col);
+
+                    _transaction.Commit();
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    _log.Write(Logger.ERROR, ex.Message);
+                    _transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
         #region Services instances
 
-        private Logger _log;
+        private readonly Logger _log;
 
-        private CacheService _cache;
+        private readonly CacheService _cache;
 
-        private IDiskService _disk;
+        private readonly IDiskService _disk;
 
-        private PageService _pager;
+        private readonly PageService _pager;
 
-        private TransactionService _transaction;
+        private readonly TransactionService _transaction;
 
-        private IndexService _indexer;
+        private readonly IndexService _indexer;
 
-        private DataService _data;
+        private readonly DataService _data;
 
-        private CollectionService _collections;
+        private readonly CollectionService _collections;
 
-        private object _locker = new object();
+        private readonly object _locker = new object();
 
         public DbEngine(IDiskService disk, Logger log)
         {
@@ -54,59 +109,5 @@ namespace LiteDB
         }
 
         #endregion Services instances
-
-        /// <summary>
-        /// Get the collection page only when nedded. Gets from pager always to garantee that wil be the last (in case of clear cache will get a new one - pageID never changes)
-        /// </summary>
-        private CollectionPage GetCollectionPage(string name, bool addIfNotExits)
-        {
-            // before get a collection, avoid dirty reads
-            _transaction.AvoidDirtyRead();
-
-            // search my page on collection service
-            var col = _collections.Get(name);
-
-            if (col == null && addIfNotExits)
-            {
-                _log.Write(Logger.COMMAND, "create new collection '{0}'", name);
-
-                col = _collections.Add(name);
-            }
-
-            return col;
-        }
-
-        /// <summary>
-        /// Encapsulate all transaction commands in same data structure
-        /// </summary>
-        private T Transaction<T>(string colName, bool addIfNotExists, Func<CollectionPage, T> action)
-        {
-            lock (_locker)
-            {
-                try
-                {
-                    _transaction.Begin();
-
-                    var col = this.GetCollectionPage(colName, addIfNotExists);
-
-                    var result = action(col);
-
-                    _transaction.Commit();
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    _log.Write(Logger.ERROR, ex.Message);
-                    _transaction.Rollback();
-                    throw;
-                }
-            }
-        }
-
-        public void Dispose()
-        {
-            _disk.Dispose();
-        }
     }
 }

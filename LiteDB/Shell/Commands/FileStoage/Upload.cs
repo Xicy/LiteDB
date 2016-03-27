@@ -6,13 +6,13 @@ namespace LiteDB.Shell.Commands
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsFileCommand(s, "upload");
+            return IsFileCommand(s, "upload");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
             var fs = new LiteFileStorage(engine);
-            var id = this.ReadId(s);
+            var id = ReadId(s);
 
             var filename = Path.GetFullPath(s.Scan(@"\s*.*").Trim());
 

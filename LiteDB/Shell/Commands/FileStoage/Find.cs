@@ -6,7 +6,7 @@ namespace LiteDB.Shell.Commands
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsFileCommand(s, "find");
+            return IsFileCommand(s, "find");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
@@ -21,7 +21,7 @@ namespace LiteDB.Shell.Commands
             }
             else
             {
-                var id = this.ReadId(s);
+                var id = ReadId(s);
 
                 var files = fs.Find(id).Select(x => x.AsDocument);
 

@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -9,20 +9,20 @@ namespace LiteDB.Tests
         public VerDatabase(Stream s, ushort version)
             : base(s, version)
         {
-            this.Log.Level = Logger.FULL;
-            this.Log.Logging += (m) => Debug.Print(m);
+            Log.Level = Logger.FULL;
+            Log.Logging += m => Debug.Print(m);
         }
 
         protected override void OnVersionUpdate(int newVersion)
         {
             if (newVersion == 1)
-                this.Run("db.col1.insert {_id:1}");
+                Run("db.col1.insert {_id:1}");
 
             if (newVersion == 2)
-                this.Run("db.col2.insert {_id:2}");
+                Run("db.col2.insert {_id:2}");
 
             if (newVersion == 3)
-                this.Run("db.col3.insert {_id:3}");
+                Run("db.col3.insert {_id:3}");
         }
     }
 

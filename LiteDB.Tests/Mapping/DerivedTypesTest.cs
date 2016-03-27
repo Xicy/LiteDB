@@ -1,10 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -31,8 +26,8 @@ namespace LiteDB.Tests
         {
             using (var db = new LiteDatabase(new MemoryStream()))
             {
-                var derived1 = new Derived1 { Id = 1, Member1 = "Derived1" };
-                var derived2 = new Derived2 { Id = 2, Member2 = "Dereived2" };
+                var derived1 = new Derived1 {Id = 1, Member1 = "Derived1"};
+                var derived2 = new Derived2 {Id = 2, Member2 = "Dereived2"};
 
                 var colTyped = db.GetCollection<Base>("Collection");
 
@@ -54,7 +49,6 @@ namespace LiteDB.Tests
 
                 Assert.IsTrue(d1 is Derived1);
                 Assert.IsTrue(d2 is Derived2);
-
             }
         }
     }

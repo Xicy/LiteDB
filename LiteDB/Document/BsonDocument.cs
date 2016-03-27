@@ -6,7 +6,8 @@ namespace LiteDB
 {
     public class BsonDocument : BsonValue
     {
-        public const int MAX_DOCUMENT_SIZE = 256 * BasePage.PAGE_AVAILABLE_BYTES; // limits in 1.044.224b max document size to avoid large documents, memory usage and slow performance
+        public const int MAX_DOCUMENT_SIZE = 256*BasePage.PAGE_AVAILABLE_BYTES;
+            // limits in 1.044.224b max document size to avoid large documents, memory usage and slow performance
 
         public BsonDocument()
             : base(new Dictionary<string, BsonValue>())
@@ -21,33 +22,28 @@ namespace LiteDB
 
         public new Dictionary<string, BsonValue> RawValue
         {
-            get
-            {
-                return (Dictionary<string, BsonValue>)base.RawValue;
-            }
+            get { return (Dictionary<string, BsonValue>) base.RawValue; }
         }
 
         /// <summary>
-        /// Get/Set a field for document. Fields are case sensitive
+        ///     Get/Set a field for document. Fields are case sensitive
         /// </summary>
         public BsonValue this[string name]
         {
-            get
-            {
-                return this.RawValue.GetOrDefault(name, BsonValue.Null);
-            }
+            get { return RawValue.GetOrDefault(name, Null); }
             set
             {
-                if (!IsValidFieldName(name)) throw new ArgumentException(string.Format("Field '{0}' has an invalid name.", name));
+                if (!IsValidFieldName(name))
+                    throw new ArgumentException(string.Format("Field '{0}' has an invalid name.", name));
 
-                this.RawValue[name] = value ?? BsonValue.Null;
+                RawValue[name] = value ?? Null;
             }
         }
 
         #region Methods
 
         /// <summary>
-        /// Add fields in fluent api
+        ///     Add fields in fluent api
         /// </summary>
         public BsonDocument Add(string key, BsonValue value)
         {
@@ -56,13 +52,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Returns all object keys with _id in first order
+        ///     Returns all object keys with _id in first order
         /// </summary>
         public IEnumerable<string> Keys
         {
             get
             {
-                var keys = this.RawValue.Keys;
+                var keys = RawValue.Keys;
 
                 if (keys.Contains("_id")) yield return "_id";
 
@@ -74,34 +70,31 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Returns how many fields this object contains
+        ///     Returns how many fields this object contains
         /// </summary>
         public int Count
         {
-            get
-            {
-                return this.RawValue.Count;
-            }
+            get { return RawValue.Count; }
         }
 
         /// <summary>
-        /// Returns if object contains a named property
+        ///     Returns if object contains a named property
         /// </summary>
         public bool ContainsKey(string name)
         {
-            return this.RawValue.ContainsKey(name);
+            return RawValue.ContainsKey(name);
         }
 
         /// <summary>
-        /// Remove a specific key on object
+        ///     Remove a specific key on object
         /// </summary>
         public bool RemoveKey(string key)
         {
-            return this.RawValue.Remove(key);
+            return RawValue.Remove(key);
         }
 
         /// <summary>
-        /// Test if field name is a valid string: only [\w$]+(\w-$)*
+        ///     Test if field name is a valid string: only [\w$]+(\w-$)*
         /// </summary>
         internal static bool IsValidFieldName(string field)
         {
@@ -114,11 +107,9 @@ namespace LiteDB
 
                 if (char.IsLetterOrDigit(c) || c == '_' || c == '$')
                 {
-                    continue;
                 }
                 else if (c == '-' && i > 0)
                 {
-                    continue;
                 }
                 else
                 {
@@ -134,7 +125,7 @@ namespace LiteDB
         #region Get/Set methods
 
         /// <summary>
-        /// Get value from a path - supports dotted path like: Customer.Address.Street
+        ///     Get value from a path - supports dotted path like: Customer.Address.Street
         /// </summary>
         public BsonValue Get(string path)
         {
@@ -158,7 +149,7 @@ namespace LiteDB
                 }
                 else
                 {
-                    return BsonValue.Null;
+                    return Null;
                 }
             }
 
@@ -166,7 +157,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Set value to a path - supports dotted path like: Customer.Address.Street - Fluent API (returns same BsonDocument)
+        ///     Set value to a path - supports dotted path like: Customer.Address.Street - Fluent API (returns same BsonDocument)
         /// </summary>
         public BsonDocument Set(string path, BsonValue value)
         {
@@ -214,9 +205,9 @@ namespace LiteDB
         public override int CompareTo(BsonValue other)
         {
             // if types are diferent, returns sort type order
-            if (other.Type != BsonType.Document) return this.Type.CompareTo(other.Type);
+            if (other.Type != BsonType.Document) return Type.CompareTo(other.Type);
 
-            var thisKeys = this.Keys.ToArray();
+            var thisKeys = Keys.ToArray();
             var thisLength = thisKeys.Length;
 
             var otherDoc = other.AsDocument;

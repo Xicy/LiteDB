@@ -1,7 +1,7 @@
 ﻿namespace LiteDB
 {
     /// <summary>
-    /// Represents a page adress inside a page structure - index could be byte offset position OR index in a list (6 bytes)
+    ///     Represents a page adress inside a page structure - index could be byte offset position OR index in a list (6 bytes)
     /// </summary>
     internal struct PageAddress
     {
@@ -20,13 +20,13 @@
 
         public override bool Equals(object obj)
         {
-            var other = (PageAddress)obj;
-            return this.PageID == other.PageID && this.Index == other.Index;
+            var other = (PageAddress) obj;
+            return PageID == other.PageID && Index == other.Index;
         }
 
         public override int GetHashCode()
         {
-            return (this.PageID + this.Index).GetHashCode();
+            return (PageID + Index).GetHashCode();
         }
 
         public PageAddress(uint pageID, ushort index)
@@ -37,7 +37,7 @@
 
         public override string ToString()
         {
-            return IsEmpty ? "----" : PageID.ToString() + ":" + Index.ToString();
+            return IsEmpty ? "----" : PageID + ":" + Index;
         }
     }
 }

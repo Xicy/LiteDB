@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -11,7 +11,7 @@ namespace LiteDB.Tests
         //[TestMethod]
         public void BigFile_Test()
         {
-            var fileSize = 8L * 1024L * 1024L * 1024L; // 5Gb
+            var fileSize = 8L*1024L*1024L*1024L; // 5Gb
             var filename = "C:/Github/LiteDB/TestResults/test-4gb.db"; // DB.Path();
 
             //File.Delete(filename);

@@ -5,7 +5,7 @@ namespace LiteDB
 {
     internal class DataService
     {
-        private PageService _pager;
+        private readonly PageService _pager;
 
         public DataService(PageService pager)
         {
@@ -13,7 +13,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Insert data inside a datapage. Returns dataPageID that idicates the first page
+        ///     Insert data inside a datapage. Returns dataPageID that idicates the first page
         /// </summary>
         public DataBlock Insert(CollectionPage col, byte[] data)
         {
@@ -21,20 +21,25 @@ namespace LiteDB
             _pager.SetDirty(col);
 
             // need to extend (data is bigger than 1 page)
-            var extend = (data.Length + DataBlock.DATA_BLOCK_FIXED_SIZE) > BasePage.PAGE_AVAILABLE_BYTES;
+            var extend = data.Length + DataBlock.DATA_BLOCK_FIXED_SIZE > BasePage.PAGE_AVAILABLE_BYTES;
 
             // if extend, just search for a page with BLOCK_SIZE avaiable
-            var dataPage = _pager.GetFreePage<DataPage>(col.FreeDataPageID, extend ? DataBlock.DATA_BLOCK_FIXED_SIZE : data.Length + DataBlock.DATA_BLOCK_FIXED_SIZE);
+            var dataPage = _pager.GetFreePage<DataPage>(col.FreeDataPageID,
+                extend ? DataBlock.DATA_BLOCK_FIXED_SIZE : data.Length + DataBlock.DATA_BLOCK_FIXED_SIZE);
 
             // create a new block with first empty index on DataPage
-            var block = new DataBlock { Position = new PageAddress(dataPage.PageID, dataPage.DataBlocks.NextIndex()), Page = dataPage };
+            var block = new DataBlock
+            {
+                Position = new PageAddress(dataPage.PageID, dataPage.DataBlocks.NextIndex()),
+                Page = dataPage
+            };
 
             // if extend, store all bytes on extended page.
             if (extend)
             {
                 var extendPage = _pager.NewPage<ExtendPage>();
                 block.ExtendPageID = extendPage.PageID;
-                this.StoreExtendData(extendPage, data);
+                StoreExtendData(extendPage, data);
             }
             else
             {
@@ -48,7 +53,8 @@ namespace LiteDB
             dataPage.UpdateItemCount();
 
             // add/remove dataPage on freelist if has space
-            _pager.AddOrRemoveToFreeList(dataPage.FreeBytes > DataPage.DATA_RESERVED_BYTES, dataPage, col, ref col.FreeDataPageID);
+            _pager.AddOrRemoveToFreeList(dataPage.FreeBytes > DataPage.DATA_RESERVED_BYTES, dataPage, col,
+                ref col.FreeDataPageID);
 
             col.DocumentCount++;
 
@@ -56,7 +62,8 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Update data inside a datapage. If new data can be used in same datapage, just update. Otherside, copy content to a new ExtendedPage
+        ///     Update data inside a datapage. If new data can be used in same datapage, just update. Otherside, copy content to a
+        ///     new ExtendedPage
         /// </summary>
         public DataBlock Update(CollectionPage col, PageAddress blockAddress, byte[] data)
         {
@@ -84,7 +91,7 @@ namespace LiteDB
                     extendPage = _pager.GetPage<ExtendPage>(block.ExtendPageID, true);
                 }
 
-                this.StoreExtendData(extendPage, data);
+                StoreExtendData(extendPage, data);
             }
             else
             {
@@ -103,29 +110,30 @@ namespace LiteDB
             dataPage.UpdateItemCount();
 
             // add/remove dataPage on freelist if has space AND its on/off free list
-            _pager.AddOrRemoveToFreeList(dataPage.FreeBytes > DataPage.DATA_RESERVED_BYTES, dataPage, col, ref col.FreeDataPageID);
+            _pager.AddOrRemoveToFreeList(dataPage.FreeBytes > DataPage.DATA_RESERVED_BYTES, dataPage, col,
+                ref col.FreeDataPageID);
 
             return block;
         }
 
         /// <summary>
-        /// Read all data from datafile using a pageID as reference. If data is not in DataPage, read from ExtendPage.
+        ///     Read all data from datafile using a pageID as reference. If data is not in DataPage, read from ExtendPage.
         /// </summary>
         public byte[] Read(PageAddress blockAddress)
         {
-            var block = this.GetBlock(blockAddress);
+            var block = GetBlock(blockAddress);
 
             // if there is a extend page, read bytes all bytes from extended pages
             if (block.ExtendPageID != uint.MaxValue)
             {
-                return this.ReadExtendData(block.ExtendPageID);
+                return ReadExtendData(block.ExtendPageID);
             }
 
             return block.Data;
         }
 
         /// <summary>
-        /// Get a data block from a DataPage using address
+        ///     Get a data block from a DataPage using address
         /// </summary>
         public DataBlock GetBlock(PageAddress blockAddress)
         {
@@ -134,7 +142,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Read all data from a extended page with all subsequences pages if exits
+        ///     Read all data from a extended page with all subsequences pages if exits
         /// </summary>
         public byte[] ReadExtendData(uint extendPageID)
         {
@@ -151,7 +159,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Delete one dataBlock
+        ///     Delete one dataBlock
         /// </summary>
         public DataBlock Delete(CollectionPage col, PageAddress blockAddress)
         {
@@ -185,7 +193,8 @@ namespace LiteDB
             else
             {
                 // add or remove to free list
-                _pager.AddOrRemoveToFreeList(page.FreeBytes > DataPage.DATA_RESERVED_BYTES, page, col, ref col.FreeDataPageID);
+                _pager.AddOrRemoveToFreeList(page.FreeBytes > DataPage.DATA_RESERVED_BYTES, page, col,
+                    ref col.FreeDataPageID);
             }
 
             col.DocumentCount--;
@@ -194,7 +203,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Store all bytes in one extended page. If data ir bigger than a page, store in more pages and make all in sequence
+        ///     Store all bytes in one extended page. If data ir bigger than a page, store in more pages and make all in sequence
         /// </summary>
         public void StoreExtendData(ExtendPage page, byte[] data)
         {
@@ -219,9 +228,9 @@ namespace LiteDB
                 if (bytesLeft > 0)
                 {
                     // if i have a continuous page, get it... or create a new one (set as dirty)
-                    page = page.NextPageID != uint.MaxValue ?
-                        _pager.GetPage<ExtendPage>(page.NextPageID, true) :
-                        _pager.NewPage<ExtendPage>(page);
+                    page = page.NextPageID != uint.MaxValue
+                        ? _pager.GetPage<ExtendPage>(page.NextPageID, true)
+                        : _pager.NewPage<ExtendPage>(page);
                 }
             }
 

@@ -4,21 +4,21 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "ensure[iI]ndex");
+            return IsCollectionCommand(s, "ensure[iI]ndex");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
-            var field = s.Scan(this.FieldPattern).Trim().ThrowIfEmpty("Invalid field name");
+            var col = ReadCollection(engine, s);
+            var field = s.Scan(FieldPattern).Trim().ThrowIfEmpty("Invalid field name");
             var opts = JsonSerializer.Deserialize(s);
             var options = new IndexOptions();
 
-            if(opts.IsBoolean)
+            if (opts.IsBoolean)
             {
                 options.Unique = opts.AsBoolean;
             }
-            else if(opts.IsDocument)
+            else if (opts.IsDocument)
             {
                 var doc = opts.AsDocument;
 

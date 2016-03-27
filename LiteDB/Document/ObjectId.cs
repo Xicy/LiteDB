@@ -7,43 +7,43 @@ using System.Threading;
 namespace LiteDB
 {
     /// <summary>
-    /// Represent a 12-bytes BSON type used in document Id
+    ///     Represent a 12-bytes BSON type used in document Id
     /// </summary>
     public class ObjectId : IComparable<ObjectId>, IEquatable<ObjectId>
     {
         /// <summary>
-        /// A zero 12-bytes ObjectId
+        ///     A zero 12-bytes ObjectId
         /// </summary>
         public static readonly ObjectId Empty = new ObjectId();
 
         #region Properties
 
         /// <summary>
-        /// Get timestamp
+        ///     Get timestamp
         /// </summary>
-        public int Timestamp { get; private set; }
+        public int Timestamp { get; }
 
         /// <summary>
-        /// Get machine number
+        ///     Get machine number
         /// </summary>
-        public int Machine { get; private set; }
+        public int Machine { get; }
 
         /// <summary>
-        /// Get pid number
+        ///     Get pid number
         /// </summary>
-        public short Pid { get; private set; }
+        public short Pid { get; }
 
         /// <summary>
-        /// Get increment
+        ///     Get increment
         /// </summary>
-        public int Increment { get; private set; }
+        public int Increment { get; }
 
         /// <summary>
-        /// Get creation time
+        ///     Get creation time
         /// </summary>
         public DateTime CreationTime
         {
-            get { return BsonValue.UnixEpoch.AddSeconds(this.Timestamp); }
+            get { return BsonValue.UnixEpoch.AddSeconds(Timestamp); }
         }
 
         #endregion Properties
@@ -51,40 +51,40 @@ namespace LiteDB
         #region Ctor
 
         /// <summary>
-        /// Initializes a new empty instance of the ObjectId class.
+        ///     Initializes a new empty instance of the ObjectId class.
         /// </summary>
         public ObjectId()
         {
-            this.Timestamp = 0;
-            this.Machine = 0;
-            this.Pid = 0;
-            this.Increment = 0;
+            Timestamp = 0;
+            Machine = 0;
+            Pid = 0;
+            Increment = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the ObjectId class from ObjectId vars.
+        ///     Initializes a new instance of the ObjectId class from ObjectId vars.
         /// </summary>
         public ObjectId(int timestamp, int machine, short pid, int increment)
         {
-            this.Timestamp = timestamp;
-            this.Machine = machine;
-            this.Pid = pid;
-            this.Increment = increment;
+            Timestamp = timestamp;
+            Machine = machine;
+            Pid = pid;
+            Increment = increment;
         }
 
         /// <summary>
-        /// Initializes a new instance of ObjectId class from another ObjectId.
+        ///     Initializes a new instance of ObjectId class from another ObjectId.
         /// </summary>
         public ObjectId(ObjectId from)
         {
-            this.Timestamp = from.Timestamp;
-            this.Machine = from.Machine;
-            this.Pid = from.Pid;
-            this.Increment = from.Increment;
+            Timestamp = from.Timestamp;
+            Machine = from.Machine;
+            Pid = from.Pid;
+            Increment = from.Increment;
         }
 
         /// <summary>
-        /// Initializes a new instance of the ObjectId class from hex string.
+        ///     Initializes a new instance of the ObjectId class from hex string.
         /// </summary>
         public ObjectId(string value)
             : this(FromHex(value))
@@ -92,32 +92,34 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Initializes a new instance of the ObjectId class from byte array.
+        ///     Initializes a new instance of the ObjectId class from byte array.
         /// </summary>
         public ObjectId(byte[] bytes)
         {
             if (bytes == null) throw new ArgumentNullException("bytes");
             if (bytes.Length != 12) throw new ArgumentException("bytes", "Byte array must be 12 bytes long");
 
-            this.Timestamp = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
-            this.Machine = (bytes[4] << 16) + (bytes[5] << 8) + bytes[6];
-            this.Pid = (short)((bytes[7] << 8) + bytes[8]);
-            this.Increment = (bytes[9] << 16) + (bytes[10] << 8) + bytes[11];
+            Timestamp = (bytes[0] << 24) + (bytes[1] << 16) + (bytes[2] << 8) + bytes[3];
+            Machine = (bytes[4] << 16) + (bytes[5] << 8) + bytes[6];
+            Pid = (short) ((bytes[7] << 8) + bytes[8]);
+            Increment = (bytes[9] << 16) + (bytes[10] << 8) + bytes[11];
         }
 
         /// <summary>
-        /// Convert hex value string in byte array
+        ///     Convert hex value string in byte array
         /// </summary>
         private static byte[] FromHex(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("val");
-            if (value.Length != 24) throw new ArgumentException(string.Format("ObjectId strings should be 24 hex characters, got {0} : \"{1}\"", value.Length, value));
+            if (value.Length != 24)
+                throw new ArgumentException(
+                    string.Format("ObjectId strings should be 24 hex characters, got {0} : \"{1}\"", value.Length, value));
 
             var bytes = new byte[12];
 
             for (var i = 0; i < 24; i += 2)
             {
-                bytes[i / 2] = Convert.ToByte(value.Substring(i, 2), 16);
+                bytes[i/2] = Convert.ToByte(value.Substring(i, 2), 16);
             }
 
             return bytes;
@@ -128,86 +130,86 @@ namespace LiteDB
         #region Equals/CompareTo/ToString
 
         /// <summary>
-        /// Equalses the specified other.
+        ///     Equalses the specified other.
         /// </summary>
         public bool Equals(ObjectId other)
         {
             return
-                this.Timestamp == other.Timestamp &&
-                this.Machine == other.Machine &&
-                this.Pid == other.Pid &&
-                this.Increment == other.Increment;
+                Timestamp == other.Timestamp &&
+                Machine == other.Machine &&
+                Pid == other.Pid &&
+                Increment == other.Increment;
         }
 
         /// <summary>
-        /// Determines whether the specified object is equal to this instance.
+        ///     Determines whether the specified object is equal to this instance.
         /// </summary>
         public override bool Equals(object other)
         {
             if (other is ObjectId)
             {
-                return this.Equals((ObjectId)other);
+                return Equals((ObjectId) other);
             }
 
             return false;
         }
 
         /// <summary>
-        /// Returns a hash code for this instance.
+        ///     Returns a hash code for this instance.
         /// </summary>
         public override int GetHashCode()
         {
-            int hash = 17;
-            hash = 37 * hash + this.Timestamp.GetHashCode();
-            hash = 37 * hash + this.Machine.GetHashCode();
-            hash = 37 * hash + this.Pid.GetHashCode();
-            hash = 37 * hash + this.Increment.GetHashCode();
+            var hash = 17;
+            hash = 37*hash + Timestamp.GetHashCode();
+            hash = 37*hash + Machine.GetHashCode();
+            hash = 37*hash + Pid.GetHashCode();
+            hash = 37*hash + Increment.GetHashCode();
             return hash;
         }
 
         /// <summary>
-        /// Compares two instances of ObjectId
+        ///     Compares two instances of ObjectId
         /// </summary>
         public int CompareTo(ObjectId other)
         {
-            var r = this.Timestamp.CompareTo(other.Timestamp);
+            var r = Timestamp.CompareTo(other.Timestamp);
             if (r != 0) return r;
 
-            r = this.Machine.CompareTo(other.Machine);
+            r = Machine.CompareTo(other.Machine);
             if (r != 0) return r;
 
-            r = this.Pid.CompareTo(other.Pid);
+            r = Pid.CompareTo(other.Pid);
             if (r != 0) return r;
 
-            return this.Increment.CompareTo(other.Increment);
+            return Increment.CompareTo(other.Increment);
         }
 
         /// <summary>
-        /// Represent ObjectId as 12 bytes array
+        ///     Represent ObjectId as 12 bytes array
         /// </summary>
         public byte[] ToByteArray()
         {
             var bytes = new byte[12];
 
-            bytes[0] = (byte)(this.Timestamp >> 24);
-            bytes[1] = (byte)(this.Timestamp >> 16);
-            bytes[2] = (byte)(this.Timestamp >> 8);
-            bytes[3] = (byte)(this.Timestamp);
-            bytes[4] = (byte)(this.Machine >> 16);
-            bytes[5] = (byte)(this.Machine >> 8);
-            bytes[6] = (byte)(this.Machine);
-            bytes[7] = (byte)(this.Pid >> 8);
-            bytes[8] = (byte)(this.Pid);
-            bytes[9] = (byte)(this.Increment >> 16);
-            bytes[10] = (byte)(this.Increment >> 8);
-            bytes[11] = (byte)(this.Increment);
+            bytes[0] = (byte) (Timestamp >> 24);
+            bytes[1] = (byte) (Timestamp >> 16);
+            bytes[2] = (byte) (Timestamp >> 8);
+            bytes[3] = (byte) Timestamp;
+            bytes[4] = (byte) (Machine >> 16);
+            bytes[5] = (byte) (Machine >> 8);
+            bytes[6] = (byte) Machine;
+            bytes[7] = (byte) (Pid >> 8);
+            bytes[8] = (byte) Pid;
+            bytes[9] = (byte) (Increment >> 16);
+            bytes[10] = (byte) (Increment >> 8);
+            bytes[11] = (byte) Increment;
 
             return bytes;
         }
 
         public override string ToString()
         {
-            return BitConverter.ToString(this.ToByteArray()).Replace("-", "").ToLower();
+            return BitConverter.ToString(ToByteArray()).Replace("-", "").ToLower();
         }
 
         #endregion Equals/CompareTo/ToString
@@ -216,8 +218,9 @@ namespace LiteDB
 
         public static bool operator ==(ObjectId lhs, ObjectId rhs)
         {
-            if (object.ReferenceEquals(lhs, null)) return object.ReferenceEquals(rhs, null);
-            if (object.ReferenceEquals(rhs, null)) return false; // don't check type because sometimes different types can be ==
+            if (ReferenceEquals(lhs, null)) return ReferenceEquals(rhs, null);
+            if (ReferenceEquals(rhs, null))
+                return false; // don't check type because sometimes different types can be ==
 
             return lhs.Equals(rhs);
         }
@@ -251,19 +254,19 @@ namespace LiteDB
 
         #region Static methods
 
-        private static int _machine;
-        private static short _pid;
+        private static readonly int _machine;
+        private static readonly short _pid;
         private static int _increment;
 
         // static constructor
         static ObjectId()
         {
             _machine = (GetMachineHash() + AppDomain.CurrentDomain.Id) & 0x00ffffff;
-            _increment = (new Random()).Next();
+            _increment = new Random().Next();
 
             try
             {
-                _pid = (short)GetCurrentProcessId();
+                _pid = (short) GetCurrentProcessId();
             }
             catch (SecurityException)
             {
@@ -284,14 +287,14 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Creates a new ObjectId.
+        ///     Creates a new ObjectId.
         /// </summary>
         public static ObjectId NewObjectId()
         {
-            var timestamp = (long)Math.Floor((DateTime.UtcNow - BsonValue.UnixEpoch).TotalSeconds);
+            var timestamp = (long) Math.Floor((DateTime.UtcNow - BsonValue.UnixEpoch).TotalSeconds);
             var inc = Interlocked.Increment(ref _increment) & 0x00ffffff;
 
-            return new ObjectId((int)timestamp, _machine, _pid, inc);
+            return new ObjectId((int) timestamp, _machine, _pid, inc);
         }
 
         #endregion Static methods

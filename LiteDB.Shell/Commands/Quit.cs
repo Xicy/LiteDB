@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LiteDB.Shell.Commands
+﻿namespace LiteDB.Shell.Commands
 {
     internal class Quit : ConsoleCommand
     {
@@ -11,7 +9,7 @@ namespace LiteDB.Shell.Commands
 
         public override void Execute(ref IShellEngine engine, StringScanner s, Display display, InputCommand input)
         {
-            if(engine != null) engine.Dispose();
+            if (engine != null) engine.Dispose();
             input.Running = false;
         }
     }

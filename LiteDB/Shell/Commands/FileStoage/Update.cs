@@ -4,13 +4,13 @@
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsFileCommand(s, "update");
+            return IsFileCommand(s, "update");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
             var fs = new LiteFileStorage(engine);
-            var id = this.ReadId(s);
+            var id = ReadId(s);
             var metadata = JsonSerializer.Deserialize(s).AsDocument;
 
             return fs.SetMetadata(id, metadata);

@@ -1,9 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -26,7 +24,7 @@ namespace LiteDB.Tests
         [TestMethod]
         public void ParallelReadInsertUpdate_Test()
         {
-            this.Setup();
+            Setup();
 
             var update = Execute("u", db =>
             {
@@ -37,7 +35,7 @@ namespace LiteDB.Tests
                     db.GetCollection<Target>("targets").Update(target);
                 }
             });
-            var insert = Execute("i", db => db.GetCollection<Target>("targets").Insert(this.CreateTarget()));
+            var insert = Execute("i", db => db.GetCollection<Target>("targets").Insert(CreateTarget()));
             var read = Execute("r", db => db.GetCollection<Target>("targets").FindAll().ToList());
             Task.WaitAll(update, insert, read);
         }
@@ -45,9 +43,9 @@ namespace LiteDB.Tests
         [TestMethod]
         public void ParallelReadInsert_Test()
         {
-            this.Setup();
+            Setup();
 
-            var insert = Execute("i", db => db.GetCollection<Target>("targets").Insert(this.CreateTarget()));
+            var insert = Execute("i", db => db.GetCollection<Target>("targets").Insert(CreateTarget()));
             var read = Execute("r", db => db.GetCollection<Target>("targets").FindAll().ToList());
             Task.WaitAll(insert, read);
         }
@@ -55,7 +53,7 @@ namespace LiteDB.Tests
         [TestMethod]
         public void ParallelReadUpdate_Test()
         {
-            this.Setup();
+            Setup();
 
             var update = Execute("u", db =>
             {
@@ -72,10 +70,10 @@ namespace LiteDB.Tests
 
         private Target CreateTarget()
         {
-            return new Target { Name = Guid.NewGuid().ToString(), LastUpdateCheck = DateTime.Now };
+            return new Target {Name = Guid.NewGuid().ToString(), LastUpdateCheck = DateTime.Now};
         }
 
-        [ClassInitialize()]
+        [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
             _filename = DB.RandomFile();
@@ -88,7 +86,7 @@ namespace LiteDB.Tests
                 db.DropCollection("targets");
                 for (var i = 0; i < 1000; i++)
                 {
-                    db.GetCollection<Target>("targets").Insert(this.CreateTarget());
+                    db.GetCollection<Target>("targets").Insert(CreateTarget());
                 }
             }
         }

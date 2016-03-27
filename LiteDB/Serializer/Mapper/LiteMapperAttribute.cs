@@ -16,8 +16,21 @@ namespace LiteDB
         public bool RemoveAccents { get; set; } = true;
         public bool TrimWhitespace { get; set; } = true;
 
-        public IndexOptions Indexes => new IndexOptions { EmptyStringToNull = EmptyStringToNull, Unique = Unique, IgnoreCase = IgnoreCase, TrimWhitespace = TrimWhitespace, RemoveAccents = RemoveAccents };
+        public IndexOptions Indexes
+            =>
+                new IndexOptions
+                {
+                    EmptyStringToNull = EmptyStringToNull,
+                    Unique = Unique,
+                    IgnoreCase = IgnoreCase,
+                    TrimWhitespace = TrimWhitespace,
+                    RemoveAccents = RemoveAccents
+                };
     }
 
-    public enum AutoID { Null, True }
+    public enum AutoID
+    {
+        Null,
+        True
+    }
 }

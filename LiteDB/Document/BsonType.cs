@@ -1,7 +1,7 @@
 ﻿namespace LiteDB
 {
     /// <summary>
-    /// All supported BsonTypes in sort order
+    ///     All supported BsonTypes in sort order
     /// </summary>
     public enum BsonType
     {

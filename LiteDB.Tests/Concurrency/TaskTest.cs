@@ -1,8 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -10,6 +8,7 @@ namespace LiteDB.Tests
     {
         [LiteMapper(AutoID = AutoID.True)]
         public string Key { get; set; }
+
         public int Info { get; set; }
     }
 
@@ -19,7 +18,7 @@ namespace LiteDB.Tests
         private static LiteDatabase db;
         private static LiteCollection<TestPocoClass> col;
 
-        [ClassInitialize()]
+        [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
             db = new LiteDatabase(new MemoryStream());
@@ -27,7 +26,7 @@ namespace LiteDB.Tests
             col.EnsureIndex(o => o.Key);
         }
 
-        [ClassCleanup()]
+        [ClassCleanup]
         public static void ClassCleanup()
         {
             db.Dispose();
@@ -61,7 +60,7 @@ namespace LiteDB.Tests
 
         private void InsertData()
         {
-            var data = new TestPocoClass()
+            var data = new TestPocoClass
             {
                 Key = "Test1",
                 Info = 1

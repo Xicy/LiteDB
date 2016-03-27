@@ -6,9 +6,9 @@ namespace LiteDB
 {
     internal class CollectionService
     {
-        private PageService _pager;
-        private IndexService _indexer;
-        private DataService _data;
+        private readonly DataService _data;
+        private readonly IndexService _indexer;
+        private readonly PageService _pager;
 
         public CollectionService(PageService pager, IndexService indexer, DataService data)
         {
@@ -18,7 +18,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Get a exist collection. Returns null if not exists
+        ///     Get a exist collection. Returns null if not exists
         /// </summary>
         public CollectionPage Get(string name)
         {
@@ -37,7 +37,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Add a new collection. Check if name the not exists
+        ///     Add a new collection. Check if name the not exists
         /// </summary>
         public CollectionPage Add(string name)
         {
@@ -48,7 +48,8 @@ namespace LiteDB
             var header = _pager.GetPage<HeaderPage>(0, true);
 
             // check limit count (8 bytes per collection = 4 to string length, 4 for uint pageID)
-            if (header.CollectionPages.Sum(x => x.Key.Length + 8) + name.Length + 8 >= CollectionPage.MAX_COLLECTIONS_SIZE)
+            if (header.CollectionPages.Sum(x => x.Key.Length + 8) + name.Length + 8 >=
+                CollectionPage.MAX_COLLECTIONS_SIZE)
             {
                 throw LiteException.CollectionLimitExceeded(CollectionPage.MAX_COLLECTIONS_SIZE);
             }
@@ -65,13 +66,13 @@ namespace LiteDB
             var pk = _indexer.CreateIndex(col);
 
             pk.Field = "_id";
-            pk.Options = new IndexOptions { Unique = true };
+            pk.Options = new IndexOptions {Unique = true};
 
             return col;
         }
 
         /// <summary>
-        /// Get all collections pages
+        ///     Get all collections pages
         /// </summary>
         public IEnumerable<CollectionPage> GetAll()
         {
@@ -84,7 +85,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Drop a collection - remove all data pages + indexes pages
+        ///     Drop a collection - remove all data pages + indexes pages
         /// </summary>
         public void Drop(CollectionPage col, CacheService cache)
         {

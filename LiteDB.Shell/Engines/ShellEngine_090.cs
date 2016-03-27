@@ -1,18 +1,21 @@
 ﻿extern alias v090;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using v090::LiteDB;
+using JsonEx = v090::LiteDB.JsonEx;
+using LiteEngine = v090::LiteDB.LiteEngine;
+using Query = v090::LiteDB.Query;
 
 namespace LiteDB.Shell
 {
-    class ShellEngine_090 : IShellEngine
+    internal class ShellEngine_090 : IShellEngine
     {
         private LiteEngine _db;
 
-        public Version Version { get { return typeof(LiteEngine).Assembly.GetName().Version; } }
+        public Version Version
+        {
+            get { return typeof (LiteEngine).Assembly.GetName().Version; }
+        }
 
         public bool Detect(string filename)
         {
@@ -40,21 +43,21 @@ namespace LiteDB.Shell
         }
 
         /// <summary>
-        /// Dump database converting to most recent version syntax
+        ///     Dump database converting to most recent version syntax
         /// </summary>
         public void Dump(TextWriter writer)
         {
             // do not include this collections now
-            var specials = new string[] { "_master", "_files", "_chunks" };
+            var specials = new[] {"_master", "_files", "_chunks"};
 
-            foreach(var name in _db.GetCollections().Where(x => !specials.Contains(x)))
+            foreach (var name in _db.GetCollections().Where(x => !specials.Contains(x)))
             {
                 var col = _db.GetCollection(name);
                 var indexes = col.GetIndexes().Where(x => x["field"] != "_id");
 
                 writer.WriteLine("-- Collection '{0}'", name);
 
-                foreach(var index in indexes)
+                foreach (var index in indexes)
                 {
                     writer.WriteLine("db.{0}.ensureIndex {1} {2}",
                         name,
@@ -64,7 +67,7 @@ namespace LiteDB.Shell
 
                 foreach (var doc in col.Find(Query.All()))
                 {
-                    writer.WriteLine("db.{0}.insert {1}", name,  JsonEx.Serialize(doc));
+                    writer.WriteLine("db.{0}.insert {1}", name, JsonEx.Serialize(doc));
                 }
             }
 
@@ -89,7 +92,7 @@ namespace LiteDB.Shell
             foreach (var chunk in chunks.Find(Query.All()))
             {
                 // adding _id format 00000
-                chunk.Id = string.Format("{0}\\{1:00000}", 
+                chunk.Id = string.Format("{0}\\{1:00000}",
                     chunk.Id.ToString().Substring(0, chunk.Id.ToString().IndexOf('\\')),
                     Convert.ToInt32(chunk.Id.ToString().Substring(chunk.Id.ToString().IndexOf('\\') + 1)));
 

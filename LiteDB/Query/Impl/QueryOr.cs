@@ -6,8 +6,8 @@ namespace LiteDB
 {
     internal class QueryOr : Query
     {
-        private Query _left;
-        private Query _right;
+        private readonly Query _left;
+        private readonly Query _right;
 
         public QueryOr(Query left, Query right)
             : base(null)

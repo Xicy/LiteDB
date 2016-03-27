@@ -1,8 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -55,23 +54,23 @@ namespace LiteDB.Tests
         [TestMethod]
         public void FileStoage_50files()
         {
-            var file5mb = new byte[5 * 1024 * 1024];
+            var file5mb = new byte[5*1024*1024];
             var filedb = DB.RandomFile();
 
             using (var db = new LiteDatabase(filedb))
             {
-                for(var i = 0; i < 50; i++)
+                for (var i = 0; i < 50; i++)
                 {
                     db.FileStorage.Upload("file_" + i, new MemoryStream(file5mb));
                 }
             }
 
             // filedb must have, at least, 250mb
-            Assert.IsTrue(new FileInfo(filedb).Length > (250 * 1024 * 1024), "Datafile must have more than 250Mb");
+            Assert.IsTrue(new FileInfo(filedb).Length > 250*1024*1024, "Datafile must have more than 250Mb");
 
             using (var db = new LiteDatabase(filedb))
             {
-                foreach(var f in db.FileStorage.FindAll())
+                foreach (var f in db.FileStorage.FindAll())
                 {
                     f.SaveAs(DB.RandomFile("bin"));
                 }

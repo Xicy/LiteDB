@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -21,11 +21,6 @@ namespace LiteDB.Tests
             innerList = new List<string>(list);
         }
 
-        public void Add(string item)
-        {
-            innerList.Add(item);
-        }
-
         public IEnumerator<string> GetEnumerator()
         {
             return innerList.GetEnumerator();
@@ -35,13 +30,24 @@ namespace LiteDB.Tests
         {
             return GetEnumerator();
         }
+
+        public void Add(string item)
+        {
+            innerList.Add(item);
+        }
     }
 
-    public enum MyEnum { First, Second }
+    public enum MyEnum
+    {
+        First,
+        Second
+    }
 
     public class MyClass
     {
-        [LiteMapper]
+        public string MyField = "DoNotSerializeThis";
+
+        [LiteMapper(AutoID = AutoID.True)]
         public int MyId { get; set; }
 
         [LiteMapper(FieldName = "MY-STRING")]
@@ -73,7 +79,6 @@ namespace LiteDB.Tests
 
         public string MyReadOnly { get; private set; }
         public string MyWriteOnly { set; private get; }
-        public string MyField = "DoNotSerializeThis";
         internal string MyInternalProperty { get; set; }
 
         // special types
@@ -133,29 +138,27 @@ namespace LiteDB.Tests
                 MyProperty = "SerializeTHIS",
                 MyIgnore = "IgnoreTHIS",
                 MyIntNullable = 999,
-                MyStringList = new List<string>() { "String-1", "String-2" },
+                MyStringList = new List<string> {"String-1", "String-2"},
                 MyWriteOnly = "write-only",
                 MyInternalProperty = "internal-field",
                 MyNameValueCollection = new NameValueCollection(),
-                MyDict = new Dictionary<int, string>() { { 1, "Row1" }, { 2, "Row2" } },
-                MyStringArray = new string[] { "One", "Two" },
-                MyStringEnumerable = new string[] { "One", "Two" },
-                CustomStringEnumerable = new CustomStringEnumerable(new string[] { "One", "Two" }),
+                MyDict = new Dictionary<int, string> {{1, "Row1"}, {2, "Row2"}},
+                MyStringArray = new[] {"One", "Two"},
+                MyStringEnumerable = new[] {"One", "Two"},
+                CustomStringEnumerable = new CustomStringEnumerable(new[] {"One", "Two"}),
                 MyEnumProp = MyEnum.Second,
                 MyChar = 'Y',
                 MyUri = new Uri("http://www.numeria.com.br"),
                 MyByte = 255,
                 MyDecimal = 19.9m,
                 MyDecimalNullable = 25.5m,
-
-                MyInterface = new MyImpl { Name = "John" },
-                MyListInterface = new List<IMyInterface>() { new MyImpl { Name = "John" } },
-                MyIListInterface = new List<IMyInterface>() { new MyImpl { Name = "John" } },
-
+                MyInterface = new MyImpl {Name = "John"},
+                MyListInterface = new List<IMyInterface> {new MyImpl {Name = "John"}},
+                MyIListInterface = new List<IMyInterface> {new MyImpl {Name = "John"}},
                 MyObjectString = "MyString",
                 MyObjectInt = 123,
-                MyObjectImpl = new MyImpl { Name = "John" },
-                MyObjectList = new List<object>() { 1, "ola", new MyImpl { Name = "John" }, new Uri("http://www.cnn.com") }
+                MyObjectImpl = new MyImpl {Name = "John"},
+                MyObjectList = new List<object> {1, "ola", new MyImpl {Name = "John"}, new Uri("http://www.cnn.com")}
             };
 
             c.MyNameValueCollection["key-1"] = "value-1";

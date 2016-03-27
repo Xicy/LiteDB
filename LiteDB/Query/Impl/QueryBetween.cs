@@ -4,8 +4,8 @@ namespace LiteDB
 {
     internal class QueryBetween : Query
     {
-        private BsonValue _start;
-        private BsonValue _end;
+        private readonly BsonValue _end;
+        private readonly BsonValue _start;
 
         public QueryBetween(string field, BsonValue start, BsonValue end)
             : base(field)
@@ -20,7 +20,7 @@ namespace LiteDB
             var end = _end.Normalize(index.Options);
 
             // define order
-            var order = start.CompareTo(end) <= 0 ? Query.Ascending : Query.Descending;
+            var order = start.CompareTo(end) <= 0 ? Ascending : Descending;
 
             // find first indexNode
             var node = indexer.Find(index, start, true, order);

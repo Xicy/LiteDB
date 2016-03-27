@@ -6,20 +6,18 @@ namespace LiteDB
 {
     public class LiteFileStream : Stream
     {
-        private DbEngine _engine;
-        private LiteFileInfo _file;
-        private readonly long _streamLength = 0;
+        private byte[] _currentChunkData;
 
-        private long _streamPosition = 0;
+        private int _currentChunkIndex;
+        private readonly DbEngine _engine;
+        private int _positionInChunk;
 
-        private int _currentChunkIndex = 0;
-        private byte[] _currentChunkData = null;
-        private int _positionInChunk = 0;
+        private long _streamPosition;
 
         internal LiteFileStream(DbEngine engine, LiteFileInfo file)
         {
             _engine = engine;
-            _file = file;
+            FileInfo = file;
 
             if (file.Length == 0)
             {
@@ -28,17 +26,20 @@ namespace LiteDB
 
             _positionInChunk = 0;
             _currentChunkIndex = 0;
-            _currentChunkData = this.GetChunkData(_currentChunkIndex);
+            _currentChunkData = GetChunkData(_currentChunkIndex);
         }
 
         /// <summary>
-        /// Get file information
+        ///     Get file information
         /// </summary>
-        public LiteFileInfo FileInfo { get { return _file; } }
+        public LiteFileInfo FileInfo { get; }
 
-        public override long Length { get { return _streamLength; } }
+        public override long Length { get; } = 0;
 
-        public override bool CanRead { get { return true; } }
+        public override bool CanRead
+        {
+            get { return true; }
+        }
 
         public override long Position
         {
@@ -48,7 +49,7 @@ namespace LiteDB
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int bytesLeft = count;
+            var bytesLeft = count;
 
             while (_currentChunkData != null && bytesLeft > 0)
             {
@@ -65,7 +66,7 @@ namespace LiteDB
                 {
                     _positionInChunk = 0;
 
-                    _currentChunkData = this.GetChunkData(++_currentChunkIndex);
+                    _currentChunkData = GetChunkData(++_currentChunkIndex);
                 }
             }
 
@@ -76,7 +77,7 @@ namespace LiteDB
         {
             // check if there is no more chunks in this file
             var chunk = _engine
-                .Find(LiteFileStorage.CHUNKS, Query.EQ("_id", LiteFileInfo.GetChunckId(_file.Id, index)))
+                .Find(LiteFileStorage.CHUNKS, Query.EQ("_id", LiteFileInfo.GetChunckId(FileInfo.Id, index)))
                 .FirstOrDefault();
 
             // if chunk is null there is no more chunks
@@ -85,9 +86,15 @@ namespace LiteDB
 
         #region Not supported operations
 
-        public override bool CanWrite { get { return false; } }
+        public override bool CanWrite
+        {
+            get { return false; }
+        }
 
-        public override bool CanSeek { get { return false; } }
+        public override bool CanSeek
+        {
+            get { return false; }
+        }
 
         public override void Flush()
         {

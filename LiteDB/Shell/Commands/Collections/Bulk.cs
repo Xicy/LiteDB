@@ -8,12 +8,12 @@ namespace LiteDB.Shell.Commands
     {
         public bool IsCommand(StringScanner s)
         {
-            return this.IsCollectionCommand(s, "bulk");
+            return IsCollectionCommand(s, "bulk");
         }
 
         public BsonValue Execute(DbEngine engine, StringScanner s)
         {
-            var col = this.ReadCollection(engine, s);
+            var col = ReadCollection(engine, s);
             var filename = s.Scan(@".*");
 
             using (var sr = new StreamReader(filename, Encoding.UTF8))

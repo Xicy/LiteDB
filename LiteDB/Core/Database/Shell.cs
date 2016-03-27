@@ -1,13 +1,13 @@
-﻿using LiteDB.Shell;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
+using LiteDB.Shell;
 
 namespace LiteDB
 {
     public partial class LiteDatabase : IDisposable
     {
         /// <summary>
-        /// Run a command shell
+        ///     Run a command shell
         /// </summary>
         public BsonValue Run(string command)
         {
@@ -17,13 +17,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Run a command shell formating $0, $1 to JSON string args item index
+        ///     Run a command shell formating $0, $1 to JSON string args item index
         /// </summary>
         public BsonValue Run(string command, params BsonValue[] args)
         {
             var shell = new LiteShell();
 
-            var cmd = Regex.Replace(command, @"\$(\d+)", (k) =>
+            var cmd = Regex.Replace(command, @"\$(\d+)", k =>
             {
                 var index = Convert.ToInt32(k.Groups[1].Value);
                 return JsonSerializer.Serialize(args[index]);

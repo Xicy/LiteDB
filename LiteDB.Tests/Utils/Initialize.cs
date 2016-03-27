@@ -1,8 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -13,7 +10,7 @@ namespace LiteDB.Tests
         public static void AssemblyCleanup()
         {
             // wait all threads close FileDB
-            System.Threading.Thread.Sleep(2000);
+            Thread.Sleep(2000);
 
             DB.DeleteFiles();
         }

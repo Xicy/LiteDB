@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LiteDB
 {
     /// <summary>
-    /// Represent all cache system and track dirty pages. All pages that load and need to be track for
-    /// dirty (to be persist after) must be added in this class.
+    ///     Represent all cache system and track dirty pages. All pages that load and need to be track for
+    ///     dirty (to be persist after) must be added in this class.
     /// </summary>
     internal class CacheService : IDisposable
     {
         /// <summary>
-        /// Max cache pages size - read or dirty. If Count pass this value cache will be clear on next checkpoint
+        ///     Max cache pages size - read or dirty. If Count pass this value cache will be clear on next checkpoint
         /// </summary>
         public const int MAX_CACHE_SIZE = 5000;
 
         // contains only clean pages, used in read operations - can be clear any time
-        private Dictionary<uint, BasePage> _cache;
+        private readonly Dictionary<uint, BasePage> _cache;
 
         // contains only dirty pages - can be write on disk before clear
-        private Dictionary<uint, BasePage> _dirty;
-
-        // call when a page need be saved on journal
-        public Action<BasePage> MarkAsDirtyAction = (page) => { };
+        private readonly Dictionary<uint, BasePage> _dirty;
 
         // call when need clear dirty cache
         public Action DirtyRecicleAction = () => { };
+
+        // call when a page need be saved on journal
+        public Action<BasePage> MarkAsDirtyAction = page => { };
 
         public CacheService()
         {
@@ -33,8 +32,19 @@ namespace LiteDB
             _dirty = new Dictionary<uint, BasePage>();
         }
 
+        public bool HasDirtyPages
+        {
+            get { return _dirty.Count > 0; }
+        }
+
+        public void Dispose()
+        {
+            Clear();
+        }
+
         /// <summary>
-        /// Get a page in my cache, first check if is in my dirty list. If not, check in my cache list. Returns null if not found
+        ///     Get a page in my cache, first check if is in my dirty list. If not, check in my cache list. Returns null if not
+        ///     found
         /// </summary>
         public BasePage GetPage(uint pageID)
         {
@@ -43,14 +53,14 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Add a page to cache. if this page is in cache, override
+        ///     Add a page to cache. if this page is in cache, override
         /// </summary>
         public void AddPage(BasePage page)
         {
             // do not cache extend page - never will be reused
             if (page.PageType != PageType.Extend)
             {
-                lock(_cache)
+                lock (_cache)
                 {
                     _cache[page.PageID] = page;
                 }
@@ -58,11 +68,11 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Add a page as dirty page
+        ///     Add a page as dirty page
         /// </summary>
         public void SetPageDirty(BasePage page)
         {
-            lock(_cache)
+            lock (_cache)
             {
                 // add page to dirty list
                 _dirty[page.PageID] = page;
@@ -84,12 +94,12 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Checkpoint is a safe point to clear cache pages without loose pages references.
-        /// Ex: is callled after each document insert/update/deleted/indexed
+        ///     Checkpoint is a safe point to clear cache pages without loose pages references.
+        ///     Ex: is callled after each document insert/update/deleted/indexed
         /// </summary>
         public void CheckPoint()
         {
-            lock(_cache)
+            lock (_cache)
             {
                 // check if dirty pages pass limits, if pass, call dirty recicle and clear
                 if (_dirty.Count > MAX_CACHE_SIZE)
@@ -107,11 +117,11 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Empty cache and dirty pages - returns true if had dirty pages
+        ///     Empty cache and dirty pages - returns true if had dirty pages
         /// </summary>
         public bool Clear()
         {
-            lock(_cache)
+            lock (_cache)
             {
                 var hasDirty = _dirty.Count > 0;
 
@@ -122,10 +132,9 @@ namespace LiteDB
             }
         }
 
-        public bool HasDirtyPages { get { return _dirty.Count > 0; } }
-
         /// <summary>
-        /// Returns all dirty pages including header page (for better write performance, get all pages in PageID increase order)
+        ///     Returns all dirty pages including header page (for better write performance, get all pages in PageID increase
+        ///     order)
         /// </summary>
         public IEnumerable<BasePage> GetDirtyPages()
         {
@@ -134,11 +143,6 @@ namespace LiteDB
             {
                 yield return page;
             }
-        }
-
-        public void Dispose()
-        {
-            this.Clear();
         }
     }
 }

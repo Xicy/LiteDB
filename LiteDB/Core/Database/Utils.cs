@@ -5,7 +5,7 @@ namespace LiteDB
     public partial class LiteDatabase : IDisposable
     {
         /// <summary>
-        /// Reduce datafile size re-creating all collection in another datafile - return how many bytes are reduced.
+        ///     Reduce datafile size re-creating all collection in another datafile - return how many bytes are reduced.
         /// </summary>
         public long Shrink()
         {
@@ -13,7 +13,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Convert a BsonDocument to a class object using BsonMapper rules
+        ///     Convert a BsonDocument to a class object using BsonMapper rules
         /// </summary>
         public T ToObject<T>(BsonDocument doc)
             where T : new()
@@ -22,7 +22,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Convert a BsonDocument to a class object using BsonMapper rules
+        ///     Convert a BsonDocument to a class object using BsonMapper rules
         /// </summary>
         public object ToObject(Type type, BsonDocument doc)
         {
@@ -30,7 +30,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Convert an entity class instance into a BsonDocument using BsonMapper rules
+        ///     Convert an entity class instance into a BsonDocument using BsonMapper rules
         /// </summary>
         public BsonDocument ToDocument(object entity)
         {

@@ -4,7 +4,7 @@ namespace LiteDB
 {
     internal class QueryStartsWith : Query
     {
-        private BsonValue _value;
+        private readonly BsonValue _value;
 
         public QueryStartsWith(string field, BsonValue value)
             : base(field)
@@ -16,7 +16,7 @@ namespace LiteDB
         {
             // find first indexNode
             var value = _value.Normalize(index.Options);
-            var node = indexer.Find(index, value, true, Query.Ascending);
+            var node = indexer.Find(index, value, true, Ascending);
             var str = value.AsString;
 
             // navigate using next[0] do next node - if less or equals returns

@@ -7,8 +7,9 @@ namespace LiteDB
     public partial class LiteCollection<T>
     {
         /// <summary>
-        /// Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef documents
-        /// Returns a new Collection with this action included
+        ///     Run an include action in each document returned by Find(), FindById(), FindOne() and All() methods to load DbRef
+        ///     documents
+        ///     Returns a new Collection with this action included
         /// </summary>
         public LiteCollection<T> Include<K>(Expression<Func<T, K>> dbref)
         {

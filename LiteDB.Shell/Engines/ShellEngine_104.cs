@@ -1,18 +1,22 @@
 ﻿extern alias v104;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using v104::LiteDB;
+using BsonValue = v104::LiteDB.BsonValue;
+using JsonSerializer = v104::LiteDB.JsonSerializer;
+using LiteDatabase = v104::LiteDB.LiteDatabase;
+using Query = v104::LiteDB.Query;
 
 namespace LiteDB.Shell
 {
-    class ShellEngine_104 : IShellEngine
+    internal class ShellEngine_104 : IShellEngine
     {
         private LiteDatabase _db;
 
-        public Version Version { get { return typeof(LiteDatabase).Assembly.GetName().Version; } }
+        public Version Version
+        {
+            get { return typeof (LiteDatabase).Assembly.GetName().Version; }
+        }
 
         public bool Detect(string filename)
         {
@@ -38,13 +42,13 @@ namespace LiteDB.Shell
         {
             var result = _db.RunCommand(command);
 
-            this.WriteResult(result, display);
+            WriteResult(result, display);
         }
 
         public void Dump(TextWriter writer)
         {
             // do not include this collections now
-            var specials = new string[] { "_files" };
+            var specials = new[] {"_files"};
 
             foreach (var name in _db.GetCollectionNames().Where(x => !specials.Contains(x)))
             {
@@ -100,7 +104,8 @@ namespace LiteDB.Shell
             {
                 foreach (var doc in result.AsArray)
                 {
-                    display.Write(ConsoleColor.Cyan, string.Format("[{0}]:{1}", ++index, display.Pretty ? Environment.NewLine : " "));
+                    display.Write(ConsoleColor.Cyan,
+                        string.Format("[{0}]:{1}", ++index, display.Pretty ? Environment.NewLine : " "));
                     display.WriteLine(ConsoleColor.DarkCyan, JsonSerializer.Serialize(doc, display.Pretty, false));
                 }
 
@@ -120,6 +125,5 @@ namespace LiteDB.Shell
         }
 
         #endregion
-
     }
 }

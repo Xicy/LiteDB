@@ -6,13 +6,13 @@ namespace LiteDB
     public partial class LiteDatabase : IDisposable
     {
         /// <summary>
-        /// Use mapper cache
+        ///     Use mapper cache
         /// </summary>
-        private static Dictionary<Type, BsonMapper> _mapperCache = new Dictionary<Type, BsonMapper>();
+        private static readonly Dictionary<Type, BsonMapper> _mapperCache = new Dictionary<Type, BsonMapper>();
 
         private void InitializeMapper()
         {
-            var type = this.GetType();
+            var type = GetType();
 
             if (!_mapperCache.TryGetValue(type, out _mapper))
             {
@@ -21,7 +21,7 @@ namespace LiteDB
                     if (!_mapperCache.TryGetValue(type, out _mapper))
                     {
                         _mapper = new BsonMapper();
-                        this.OnModelCreating(_mapper);
+                        OnModelCreating(_mapper);
 
                         _mapperCache.Add(type, _mapper);
                     }
@@ -30,7 +30,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Use this method to override and apply rules to map your entities to BsonDocument
+        ///     Use this method to override and apply rules to map your entities to BsonDocument
         /// </summary>
         protected virtual void OnModelCreating(BsonMapper mapper)
         {
