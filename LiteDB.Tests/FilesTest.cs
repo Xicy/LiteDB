@@ -1,4 +1,5 @@
-﻿using System;
+﻿extern alias v200;
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LiteDB;
@@ -6,9 +7,13 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Collections.Specialized;
+using v200::LiteDB.Shell.Commands;
+using LiteEngine = v200::LiteDB.LiteEngine;
 
 namespace UnitTest
 {
+    extern alias v090;
+
     [TestClass]
     public class FilesTest
     {
@@ -23,7 +28,7 @@ namespace UnitTest
         [TestMethod]
         public void Files_Store()
         {
-            using (var db = new LiteEngine(dbpath))
+            using (var db = new v090::LiteDB.LiteEngine(dbpath))
             {
                 var c = db.GetCollection("customer");
 
