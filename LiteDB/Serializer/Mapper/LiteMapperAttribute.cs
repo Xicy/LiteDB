@@ -30,6 +30,7 @@ namespace LiteDB
 
     public enum AutoID
     {
+        False,
         Null,
         True
     }

@@ -111,43 +111,36 @@ namespace LiteDB.Tests
                 col.EnsureIndex(x => x.Name, true);
                 col.EnsureIndex(x => x.Age);
 
-                col.Insert(new[]
-                {
-                    new User {Id = 1, Name = "John Smith", Age = 10},
-                    new User {Id = 2, Name = "Jane Smith", Age = 12},
-                    new User {Id = 3, Name = "John Doe", Age = 24},
-                    new User {Id = 4, Name = "Jane Doe", Age = 42}
-                });
+                col.Insert(new[] { new User() { Id = 1, Name = "John Smith", Age = 10 },
+                                   new User() { Id = 2, Name = "Jane Smith", Age = 12 },
+                                   new User() { Id = 3, Name = "John Doe", Age = 24 },
+                                   new User() { Id = 4, Name = "Jane Doe", Age = 42 } });
 
-                var empty = new string[] {};
+                var empty = new string[] { };
                 Assert.AreEqual(0, col.Count(user => empty.All(name => user.Name.Contains(name))));
                 Assert.AreEqual(0, col.Count(user => empty.Any(name => user.Name.Contains(name))));
 
-                var firstNames = new[] {"John", "Jane", "Jon", "Janet"};
+                var firstNames = new[] { "John", "Jane", "Jon", "Janet" };
                 Assert.AreEqual(0, col.Count(user => firstNames.All(name => user.Name.StartsWith(name))));
                 Assert.AreEqual(4, col.Count(user => firstNames.Any(name => user.Name.StartsWith(name))));
 
-                var surnames = new[] {"Smith", "Doe", "Mason", "Brown"};
+                var surnames = new[] { "Smith", "Doe", "Mason", "Brown" };
                 Assert.AreEqual(0, col.Count(user => surnames.All(name => user.Name.Contains(name))));
                 Assert.AreEqual(4, col.Count(user => surnames.Any(name => user.Name.Contains(name))));
 
-                var johnSmith = new[] {"John", "Smith"};
+                var johnSmith = new[] { "John", "Smith" };
                 Assert.AreEqual(1, col.Count(user => johnSmith.All(name => user.Name.Contains(name))));
                 Assert.AreEqual(3, col.Count(user => johnSmith.Any(name => user.Name.Contains(name))));
 
-                var janeDoe = new[] {"Jane", "Doe"};
+                var janeDoe = new[] { "Jane", "Doe" };
                 Assert.AreEqual(1, col.Count(user => janeDoe.All(name => user.Name.Contains(name))));
                 Assert.AreEqual(3, col.Count(user => janeDoe.Any(name => user.Name.Contains(name))));
 
-                var numRange = new[]
-                {
-                    new {Min = 10, Max = 12},
-                    new {Min = 21, Max = 33}
-                };
+                var numRange = new[] { new { Min = 10, Max = 12 },
+                                       new { Min = 21, Max = 33 } };
                 var numQuery = numRange.Select(num => Query.And(Query.GTE("Age", num.Min), Query.LTE("Age", num.Max)));
-                var queryResult = col.Find(numQuery.Aggregate((lhs, rhs) => Query.Or(lhs, rhs))).ToArray();
-                
-                var lambdaResult = col.Find(p => numRange.Any(num => p.Age >= num.Min && p.Age <= num.Max)).ToArray();
+                var queryResult = col.Find(numQuery.Aggregate((lhs, rhs) => Query.Or(lhs, rhs)));
+                var lambdaResult = col.Find(p => numRange.Any(num => p.Age >= num.Min && p.Age <= num.Max));
                 Assert.IsTrue(queryResult.OrderBy(u => u.Name).SequenceEqual(lambdaResult.OrderBy(u => u.Name)));
             }
         }

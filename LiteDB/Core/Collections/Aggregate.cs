@@ -8,16 +8,16 @@ namespace LiteDB
         #region Count
 
         /// <summary>
-        ///     Get document count using property on collection.
+        /// Get document count using property on collection.
         /// </summary>
         public int Count()
         {
             // do not use indexes - collections has DocumentCount property
-            return (int) _engine.Count(Name, null);
+            return (int)_engine.Count(Name, null);
         }
 
         /// <summary>
-        ///     Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
+        /// Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         public int Count(Query query)
         {
@@ -28,7 +28,7 @@ namespace LiteDB
             {
                 try
                 {
-                    return (int) _engine.Count(Name, query);
+                    return (int)_engine.Count(Name, query);
                 }
                 catch (IndexNotFoundException ex)
                 {
@@ -41,13 +41,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        ///     Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
+        /// Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         public int Count(Expression<Func<T, bool>> predicate)
         {
             if (predicate == null) throw new ArgumentNullException("predicate");
 
-            return Count(_visitor.Visit(predicate));
+            return this.Count(_visitor.Visit(predicate));
         }
 
         #endregion Count
@@ -55,7 +55,7 @@ namespace LiteDB
         #region LongCount
 
         /// <summary>
-        ///     Get document count using property on collection.
+        /// Get document count using property on collection.
         /// </summary>
         public long LongCount()
         {
@@ -64,7 +64,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        ///     Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
+        /// Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         public long LongCount(Query query)
         {
@@ -88,13 +88,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        ///     Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
+        /// Count documnets with a query. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         public long LongCount(Expression<Func<T, bool>> predicate)
         {
             if (predicate == null) throw new ArgumentNullException("predicate");
 
-            return LongCount(_visitor.Visit(predicate));
+            return this.LongCount(_visitor.Visit(predicate));
         }
 
         #endregion LongCount
@@ -102,8 +102,7 @@ namespace LiteDB
         #region Exists
 
         /// <summary>
-        ///     Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query
-        ///     expression
+        /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         public bool Exists(Query query)
         {
@@ -127,14 +126,13 @@ namespace LiteDB
         }
 
         /// <summary>
-        ///     Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query
-        ///     expression
+        /// Returns true if query returns any document. This method does not deserialize any document. Needs indexes on query expression
         /// </summary>
         public bool Exists(Expression<Func<T, bool>> predicate)
         {
             if (predicate == null) throw new ArgumentNullException("predicate");
 
-            return Exists(_visitor.Visit(predicate));
+            return this.Exists(_visitor.Visit(predicate));
         }
 
         #endregion Exits
@@ -142,7 +140,7 @@ namespace LiteDB
         #region Min/Max
 
         /// <summary>
-        ///     Returns the first/min value from a index field
+        /// Returns the first/min value from a index field
         /// </summary>
         public BsonValue Min(string field)
         {
@@ -166,15 +164,15 @@ namespace LiteDB
         }
 
         /// <summary>
-        ///     Returns the first/min _id field
+        /// Returns the first/min _id field
         /// </summary>
         public BsonValue Min()
         {
-            return Min("_id");
+            return this.Min("_id");
         }
 
         /// <summary>
-        ///     Returns the first/min field using a linq expression
+        /// Returns the first/min field using a linq expression
         /// </summary>
         public BsonValue Min<K>(Expression<Func<T, K>> property)
         {
@@ -182,11 +180,11 @@ namespace LiteDB
 
             var field = _visitor.GetBsonField(property);
 
-            return Min(field);
+            return this.Min(field);
         }
 
         /// <summary>
-        ///     Returns the last/max value from a index field
+        /// Returns the last/max value from a index field
         /// </summary>
         public BsonValue Max(string field)
         {
@@ -210,15 +208,15 @@ namespace LiteDB
         }
 
         /// <summary>
-        ///     Returns the last/max _id field
+        /// Returns the last/max _id field
         /// </summary>
         public BsonValue Max()
         {
-            return Max("_id");
+            return this.Max("_id");
         }
 
         /// <summary>
-        ///     Returns the last/max field using a linq expression
+        /// Returns the last/max field using a linq expression
         /// </summary>
         public BsonValue Max<K>(Expression<Func<T, K>> property)
         {
@@ -226,7 +224,7 @@ namespace LiteDB
 
             var field = _visitor.GetBsonField(property);
 
-            return Max(field);
+            return this.Max(field);
         }
 
         #endregion Min/Max

@@ -63,11 +63,11 @@ namespace LiteDB
                 // create a property mapper
                 var p = new PropertyMapper
                 {
-                    AutoId = mapper.AutoID == AutoID.Null || mapper.AutoID == AutoID.True,
+                    AutoId = mapper.AutoID != AutoID.False,
                     FieldName = name,
                     PropertyName = prop.Name,
                     PropertyType = prop.PropertyType,
-                    IndexOptions = name == "_id" ? null : mapper.Indexes,
+                    IndexOptions = name == "_id" || !bsonField ? null : mapper.Indexes,
                     Getter = getter,
                     Setter = setter
                 };
@@ -92,9 +92,7 @@ namespace LiteDB
             // Get all properties and test in order: BsonIdAttribute, "Id" name, "<typeName>Id" name
             return
                 SelectProperty(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic),
-                    x =>
-                        ((LiteMapperAttribute) Attribute.GetCustomAttribute(x, typeof (LiteMapperAttribute), true) ??
-                         new LiteMapperAttribute()).AutoID == AutoID.True,
+                    x => ((LiteMapperAttribute) Attribute.GetCustomAttribute(x, typeof (LiteMapperAttribute), true) ?? new LiteMapperAttribute()).AutoID == AutoID.True,
                     x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase),
                     x => x.Name.Equals(type.Name + "Id", StringComparison.OrdinalIgnoreCase));
         }

@@ -27,7 +27,7 @@ namespace LiteDB
                 {
                     var docs = _engine.Find(Name, query, skip, limit);
 
-                    enumerator = docs.GetEnumerator();
+                    enumerator = (IEnumerator<BsonDocument>)docs.GetEnumerator();
 
                     more = enumerator.MoveNext();
 
@@ -57,7 +57,8 @@ namespace LiteDB
                 var obj = _mapper.ToObject<T>(enumerator.Current);
 
                 yield return obj;
-            } while (more = enumerator.MoveNext());
+            }
+            while (more = enumerator.MoveNext());
         }
 
         /// <summary>

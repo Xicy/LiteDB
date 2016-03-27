@@ -47,7 +47,7 @@ namespace LiteDB.Tests
     {
         public string MyField = "DoNotSerializeThis";
 
-        [LiteMapper(AutoID = AutoID.True)]
+        [LiteMapper(AutoID = AutoID.False)]
         public int MyId { get; set; }
 
         [LiteMapper(FieldName = "MY-STRING")]
