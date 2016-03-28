@@ -48,7 +48,7 @@ namespace LiteDB.Tests
         public string MyField = "DoNotSerializeThis";
 
         [LiteMapper(AutoID = AutoID.False)]
-        public int MyId { get; set; }
+        public int MyClassId { get; set; }
 
         [LiteMapper(FieldName = "MY-STRING")]
         public string MyString { get; set; }
@@ -131,7 +131,7 @@ namespace LiteDB.Tests
         {
             var c = new MyClass
             {
-                MyId = 123,
+                MyClassId = 123,
                 MyString = "John",
                 MyGuid = Guid.NewGuid(),
                 MyDateTime = DateTime.Now,
@@ -181,12 +181,12 @@ namespace LiteDB.Tests
             var nobj = mapper.ToObject<MyClass>(doc);
 
             // compare object to document
-            Assert.AreEqual(doc["_id"].AsInt32, obj.MyId);
+            Assert.AreEqual(doc["_id"].AsInt32, obj.MyClassId);
             Assert.AreEqual(doc["MY-STRING"].AsString, obj.MyString);
             Assert.AreEqual(doc["my_guid"].AsGuid, obj.MyGuid);
 
             // compare 2 objects
-            Assert.AreEqual(obj.MyId, nobj.MyId);
+            Assert.AreEqual(obj.MyClassId, nobj.MyClassId);
             Assert.AreEqual(obj.MyString, nobj.MyString);
             Assert.AreEqual(obj.MyProperty, nobj.MyProperty);
             Assert.AreEqual(obj.MyGuid, nobj.MyGuid);
