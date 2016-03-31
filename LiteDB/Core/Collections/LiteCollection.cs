@@ -6,7 +6,7 @@ namespace LiteDB
         where T : new()
     {
         private readonly DbEngine _engine;
-        private readonly List<string> _includes;
+        //private readonly List<string> _includes;
         private readonly Logger _log;
         private readonly BsonMapper _mapper;
         private readonly QueryVisitor<T> _visitor;
@@ -18,7 +18,7 @@ namespace LiteDB
             _mapper = mapper;
             _log = log;
             _visitor = new QueryVisitor<T>(mapper);
-            _includes = new List<string>();
+            //_includes = new List<string>();
         }
 
         /// <summary>

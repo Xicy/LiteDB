@@ -12,13 +12,13 @@ namespace LiteDB
         ///     documents
         ///     Returns a new Collection with this action included
         /// </summary>
-        public LiteCollection<T> Include<K>(Expression<Func<T, K>> dbref)
+        /*public LiteCollection<T> Include<K>(Expression<Func<T, K>> dbref)
         {
             if (dbref == null) throw new ArgumentNullException("dbref");
             var path = _visitor.GetBsonField(dbref);
             _includes.Add(path);
             return this;
-        }
+        }*/
 
         /*private IEnumerable<Action<BsonDocument>> StartInclude()
         {
