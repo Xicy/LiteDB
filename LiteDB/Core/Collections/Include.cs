@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace LiteDB
@@ -19,7 +20,7 @@ namespace LiteDB
             return this;
         }
 
-        private IEnumerable<Action<BsonDocument>> StartInclude()
+        /*private IEnumerable<Action<BsonDocument>> StartInclude()
         {
             foreach (var path in _includes)
             {
@@ -53,6 +54,39 @@ namespace LiteDB
                     }
                 };
             }
+        }*/
+
+        private IEnumerable<Action<BsonDocument>> StartInclude()
+        {
+            yield return delegate (BsonDocument bson)
+            {
+                var keys = bson.Keys.ToArray();
+                foreach (var key in keys)
+                {
+                    var value = bson.Get(key);
+                    if (value.IsNull) continue;
+
+                    if (value.IsArray)
+                    {
+                        var array = value.AsArray;
+                        if (array.Count == 0) continue;
+                        if (!array[0].IsDocument) continue;
+                        if (!array[0].AsDocument.ContainsKey("$ref")) continue;
+                        var col = new LiteCollection<BsonDocument>(array[0].AsDocument["$ref"], _engine, _mapper, _log);
+                        for (var i = 0; i < array.Count; i++)
+                        {
+                            array[i] = col.FindById(array[i].AsDocument["$id"]);
+                        }
+                    }
+                    else if (value.IsDocument)
+                    {
+                        var doc = value.AsDocument;
+                        if (!doc.ContainsKey("$ref")) continue;
+                        var col = new LiteCollection<BsonDocument>(doc["$ref"], _engine, _mapper, _log);
+                        bson.Set(key, col.FindById(doc["$id"]));
+                    }
+                }
+            };
         }
     }
 }
