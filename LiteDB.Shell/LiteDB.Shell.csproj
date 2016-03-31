@@ -48,14 +48,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LiteDB090">
-      <HintPath>Resources\LiteDB090.dll</HintPath>
-      <Aliases>v090</Aliases>
-    </Reference>
-    <Reference Include="LiteDB104">
-      <HintPath>Resources\LiteDB104.dll</HintPath>
-      <Aliases>v104</Aliases>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -70,8 +62,6 @@
     <Compile Include="Commands\Run.cs" />
     <Compile Include="Commands\Ed.cs" />
     <Compile Include="Engines\ShellEngine_200.cs" />
-    <Compile Include="Engines\ShellEngine_104.cs" />
-    <Compile Include="Engines\ShellEngine_090.cs" />
     <Compile Include="Engines\IShellEngine.cs" />
     <Compile Include="Shell\ConsoleCommand.cs" />
     <Compile Include="Commands\Close.cs" />

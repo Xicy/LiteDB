@@ -64,10 +64,12 @@ namespace LiteDB.Tests
                 db.Orders.EnsureIndex(x => x.Customer.Login);
 
                 var query = db.Orders
-                    .Include(x => x.Customer)
+                    //.Include(x => x.Customer)
                     .FindOne(x => x.Customer.Login == "jd");
 
-                var a = db.Orders.Include(x => x.Customer).FindAll().ToArray();
+                var a = db.Orders
+                    //.Include(x => x.Customer)
+                    .FindAll().ToArray();
 
                 Assert.AreEqual(customer.Name, query.Customer.Name);
             }

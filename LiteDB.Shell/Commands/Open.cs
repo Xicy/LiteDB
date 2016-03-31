@@ -36,8 +36,8 @@ namespace LiteDB.Shell.Commands
         {
             var engines = new IShellEngine[]
             {
-                new ShellEngine_090(),
-                new ShellEngine_104(),
+                //new ShellEngine_090(),
+                //new ShellEngine_104(),
                 new ShellEngine_200()
             };
 

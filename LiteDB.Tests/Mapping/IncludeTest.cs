@@ -101,12 +101,12 @@ namespace LiteDB.Tests
                 db.Orders.Insert(order);
 
                 var query = db.Orders
-                    .Include(x => x.Customer)
-                    .Include(x => x.CustomerNull)
-                    .Include(x => x.Products)
-                    .Include(x => x.ProductArray)
-                    .Include(x => x.ProductColl)
-                    .Include(x => x.ProductsNull)
+                    //.Include(x => x.Customer)
+                    //.Include(x => x.CustomerNull)
+                    //.Include(x => x.Products)
+                    //.Include(x => x.ProductArray)
+                    //.Include(x => x.ProductColl)
+                    //.Include(x => x.ProductsNull)
                     .FindAll()
                     .FirstOrDefault();
 
