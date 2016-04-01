@@ -1,6 +1,5 @@
-﻿using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace LiteDB.Tests
 {
@@ -23,15 +22,8 @@ namespace LiteDB.Tests
         {
         }
 
-        public LiteCollection<DCustomer> Customers
-        {
-            get { return GetCollection<DCustomer>("customers"); }
-        }
-
-        public LiteCollection<DOrder> Orders
-        {
-            get { return GetCollection<DOrder>("orders"); }
-        }
+        public LiteCollection<DCustomer> Customers { get { return this.GetCollection<DCustomer>("customers"); } }
+        public LiteCollection<DOrder> Orders { get { return this.GetCollection<DOrder>("orders"); } }
 
         protected override void OnModelCreating(BsonMapper mapper)
         {
@@ -54,8 +46,8 @@ namespace LiteDB.Tests
         {
             using (var db = new DbRefIndexDatabase())
             {
-                var customer = new DCustomer {Login = "jd", Name = "John Doe"};
-                var order = new DOrder {OrderNumber = 1, Customer = customer};
+                var customer = new DCustomer { Login = "jd", Name = "John Doe" };
+                var order = new DOrder { OrderNumber = 1, Customer = customer };
 
                 db.Customers.Insert(customer);
                 db.Orders.Insert(order);
@@ -66,10 +58,6 @@ namespace LiteDB.Tests
                 var query = db.Orders
                     //.Include(x => x.Customer)
                     .FindOne(x => x.Customer.Login == "jd");
-
-                var a = db.Orders
-                    //.Include(x => x.Customer)
-                    .FindAll().ToArray();
 
                 Assert.AreEqual(customer.Name, query.Customer.Name);
             }

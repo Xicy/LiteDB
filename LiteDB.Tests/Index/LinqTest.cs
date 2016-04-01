@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiteDB.Tests
 {
@@ -16,10 +16,10 @@ namespace LiteDB.Tests
 
         public override bool Equals(object obj)
         {
-            var other = obj as User;
+            var other = (obj as User);
             if (other != null)
             {
-                return other.Id == Id;
+                return other.Id == this.Id;
             }
 
             return false;
@@ -27,7 +27,7 @@ namespace LiteDB.Tests
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return this.Id.GetHashCode();
         }
     }
 
@@ -44,20 +44,8 @@ namespace LiteDB.Tests
         {
             using (var db = new LiteDatabase(new MemoryStream()))
             {
-                var c1 = new User
-                {
-                    Id = 1,
-                    Name = "Mauricio",
-                    Active = true,
-                    Domain = new UserDomain { DomainName = "Numeria" }
-                };
-                var c2 = new User
-                {
-                    Id = 2,
-                    Name = "Malatruco",
-                    Active = false,
-                    Domain = new UserDomain { DomainName = "Numeria" }
-                };
+                var c1 = new User { Id = 1, Name = "Mauricio", Active = true, Domain = new UserDomain { DomainName = "Numeria" } };
+                var c2 = new User { Id = 2, Name = "Malatruco", Active = false, Domain = new UserDomain { DomainName = "Numeria" } };
                 var c3 = new User { Id = 3, Name = "Chris", Domain = new UserDomain { DomainName = "Numeria" } };
                 var c4 = new User { Id = 4, Name = "Juliane" };
 
@@ -65,7 +53,7 @@ namespace LiteDB.Tests
 
                 col.EnsureIndex(x => x.Name, true);
 
-                col.Insert(new[] { c1, c2, c3, c4 });
+                col.Insert(new User[] { c1, c2, c3, c4 });
 
                 // a simple lambda function to returns string "Numeria"
                 Func<string> GetNumeria = () => "Numeria";
@@ -86,7 +74,7 @@ namespace LiteDB.Tests
 
                 // methods
                 Assert.AreEqual(1, col.Count(x => x.Name.StartsWith("mal")));
-                Assert.AreEqual(1, col.Count(x => x.Name.Equals("MAuricio")));
+                Assert.AreEqual(1, col.Count(x => x.Name.Equals("Mauricio")));
                 Assert.AreEqual(1, col.Count(x => x.Name.Contains("cio")));
 
                 // > >= < <=
@@ -136,10 +124,11 @@ namespace LiteDB.Tests
                 Assert.AreEqual(1, col.Count(user => janeDoe.All(name => user.Name.Contains(name))));
                 Assert.AreEqual(3, col.Count(user => janeDoe.Any(name => user.Name.Contains(name))));
 
-                var numRange = new[] { new[] { 10, 12 }, new[] { 21, 33 } };
-                var numQuery = numRange.Select(num => Query.And(Query.GTE("Age", (int)num.GetValue(0)), Query.LTE("Age", (int)num.GetValue(1))));
+                var numRange = new[] { new { Min = 10, Max = 12 },
+                                       new { Min = 21, Max = 33 } };
+                var numQuery = numRange.Select(num => Query.And(Query.GTE("Age", num.Min), Query.LTE("Age", num.Max)));
                 var queryResult = col.Find(numQuery.Aggregate((lhs, rhs) => Query.Or(lhs, rhs)));
-                var lambdaResult = col.Find(p => (p.Age >= 10 && p.Age <= 12) || (p.Age >= 21 && p.Age <= 33));
+                var lambdaResult = col.Find(p => numRange.Any(num => p.Age >= num.Min && p.Age <= num.Max));
                 Assert.IsTrue(queryResult.OrderBy(u => u.Name).SequenceEqual(lambdaResult.OrderBy(u => u.Name)));
             }
         }

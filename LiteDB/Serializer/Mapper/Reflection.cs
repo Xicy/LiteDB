@@ -7,19 +7,56 @@ using System.Reflection.Emit;
 namespace LiteDB
 {
     /// <summary>
-    ///     Helper class to get entity properties and map as BsonValue
+    /// Helper class to get entity properties and map as BsonValue
     /// </summary>
     internal class Reflection
     {
-        private static readonly Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
+        private delegate object CreateObject();
+
+        private static Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
+
+        #region GetIdProperty
+
+        /// <summary>
+        /// Gets PropertyInfo that refers to Id from a document object.
+        /// </summary>
+        public static PropertyInfo GetIdProperty(Type type)
+        {
+            // Get all properties and test in order: BsonIdAttribute, "Id" name, "<typeName>Id" name
+            return SelectProperty(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic),
+                    x => ((LiteMapperAttribute)Attribute.GetCustomAttribute(x, typeof(LiteMapperAttribute), true) ?? new LiteMapperAttribute()).AutoID == AutoID.True,
+                    x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase),
+                    x => x.Name.Equals(type.Name + "Id", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static PropertyInfo SelectProperty(IEnumerable<PropertyInfo> props, params Func<PropertyInfo, bool>[] predicates)
+        {
+            foreach (var predicate in predicates)
+            {
+                var prop = props.FirstOrDefault(predicate);
+
+                if (prop != null)
+                {
+                    if (!prop.CanRead || !prop.CanWrite)
+                    {
+                        throw LiteException.PropertyReadWrite(prop);
+                    }
+
+                    return prop;
+                }
+            }
+
+            return null;
+        }
+
+        #endregion GetIdProperty
 
         #region GetProperties
 
         /// <summary>
-        ///     Read all properties from a type - store in a static cache - exclude: Id and [BsonIgnore]
+        /// Read all properties from a type - store in a static cache - exclude: Id and [BsonIgnore]
         /// </summary>
-        public static Dictionary<string, PropertyMapper> GetProperties(Type type,
-            Func<string, string> resolvePropertyName)
+        public static Dictionary<string, PropertyMapper> GetProperties(Type type, Func<string, string> resolvePropertyName)
         {
             var dict = new Dictionary<string, PropertyMapper>(StringComparer.OrdinalIgnoreCase);
             var id = GetIdProperty(type);
@@ -31,16 +68,16 @@ namespace LiteDB
                 if (prop.GetIndexParameters().Length > 0) continue;
 
                 // ignore not read/write
-                if (!prop.CanRead || !prop.CanWrite) continue;
+                ////if (!prop.CanRead || !prop.CanWrite) continue;
+                if (!prop.CanRead) continue;
 
-                var mapper =
-                    (LiteMapperAttribute) prop.GetCustomAttributes(typeof (LiteMapperAttribute), false).FirstOrDefault() ??
-                    new LiteMapperAttribute();
+                var mapper = (LiteMapperAttribute)prop.GetCustomAttributes(typeof(LiteMapperAttribute), false).FirstOrDefault() ?? new LiteMapperAttribute();
 
+                // [BsonIgnore]
                 if (mapper.Ignore) continue;
 
                 // check if property has [BsonField]
-                var bsonField = prop.IsDefined(typeof (LiteMapperAttribute), false);
+                var bsonField = prop.IsDefined(typeof(LiteMapperAttribute), false);
 
                 // create getter/setter IL function
                 var getter = CreateGetMethod(type, prop, bsonField);
@@ -80,50 +117,10 @@ namespace LiteDB
 
         #endregion GetProperties
 
-        private delegate object CreateObject();
-
-        #region GetIdProperty
-
-        /// <summary>
-        ///     Gets PropertyInfo that refers to Id from a document object.
-        /// </summary>
-        public static PropertyInfo GetIdProperty(Type type)
-        {
-            // Get all properties and test in order: BsonIdAttribute, "Id" name, "<typeName>Id" name
-            return
-                SelectProperty(type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic),
-                    x => ((LiteMapperAttribute) Attribute.GetCustomAttribute(x, typeof (LiteMapperAttribute), true) ?? new LiteMapperAttribute()).AutoID == AutoID.True,
-                    x => x.Name.Equals("Id", StringComparison.OrdinalIgnoreCase),
-                    x => x.Name.Equals(type.Name + "Id", StringComparison.OrdinalIgnoreCase));
-        }
-
-        private static PropertyInfo SelectProperty(IEnumerable<PropertyInfo> props,
-            params Func<PropertyInfo, bool>[] predicates)
-        {
-            foreach (var predicate in predicates)
-            {
-                var prop = props.FirstOrDefault(predicate);
-
-                if (prop != null)
-                {
-                    if (!prop.CanRead || !prop.CanWrite)
-                    {
-                        throw LiteException.PropertyReadWrite(prop);
-                    }
-
-                    return prop;
-                }
-            }
-
-            return null;
-        }
-
-        #endregion GetIdProperty
-
         #region IL Code
 
         /// <summary>
-        ///     Create a new instance from a Type
+        /// Create a new instance from a Type
         /// </summary>
         public static object CreateInstance(Type type)
         {
@@ -150,52 +147,58 @@ namespace LiteDB
                     {
                         return c();
                     }
-                    if (type.IsClass)
+                    else
                     {
-                        var dynMethod = new DynamicMethod("_", type, null);
-                        var il = dynMethod.GetILGenerator();
-                        il.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
-                        il.Emit(OpCodes.Ret);
-                        c = (CreateObject) dynMethod.CreateDelegate(typeof (CreateObject));
-                        _cacheCtor.Add(type, c);
-                    }
-                    else if (type.IsInterface) // some know interfaces
-                    {
-                        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IList<>))
+                        if (type.IsClass)
                         {
-                            return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                            var dynMethod = new DynamicMethod("_", type, null);
+                            var il = dynMethod.GetILGenerator();
+                            il.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
+                            il.Emit(OpCodes.Ret);
+                            c = (CreateObject)dynMethod.CreateDelegate(typeof(CreateObject));
+                            _cacheCtor.Add(type, c);
                         }
-                        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (ICollection<>))
+                        else if (type.IsInterface) // some know interfaces
                         {
-                            return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IList<>))
+                            {
+                                return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                            }
+                            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>))
+                            {
+                                return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                            }
+                            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                            {
+                                return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                            }
+                            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                            {
+                                var k = type.GetGenericArguments()[0];
+                                var v = type.GetGenericArguments()[1];
+                                return CreateInstance(GetGenericDictionaryOfType(k, v));
+                            }
+                            else
+                            {
+                                throw LiteException.InvalidCtor(type);
+                            }
                         }
-                        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                        else // structs
                         {
-                            return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                            var dynMethod = new DynamicMethod("_", typeof(object), null);
+                            var il = dynMethod.GetILGenerator();
+                            var lv = il.DeclareLocal(type);
+                            il.Emit(OpCodes.Ldloca_S, lv);
+                            il.Emit(OpCodes.Initobj, type);
+                            il.Emit(OpCodes.Ldloc_0);
+                            il.Emit(OpCodes.Box, type);
+                            il.Emit(OpCodes.Ret);
+                            c = (CreateObject)dynMethod.CreateDelegate(typeof(CreateObject));
+                            _cacheCtor.Add(type, c);
                         }
-                        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IDictionary<,>))
-                        {
-                            var k = type.GetGenericArguments()[0];
-                            var v = type.GetGenericArguments()[1];
-                            return CreateInstance(GetGenericDictionaryOfType(k, v));
-                        }
-                        throw LiteException.InvalidCtor(type);
-                    }
-                    else // structs
-                    {
-                        var dynMethod = new DynamicMethod("_", typeof (object), null);
-                        var il = dynMethod.GetILGenerator();
-                        var lv = il.DeclareLocal(type);
-                        il.Emit(OpCodes.Ldloca_S, lv);
-                        il.Emit(OpCodes.Initobj, type);
-                        il.Emit(OpCodes.Ldloc_0);
-                        il.Emit(OpCodes.Box, type);
-                        il.Emit(OpCodes.Ret);
-                        c = (CreateObject) dynMethod.CreateDelegate(typeof (CreateObject));
-                        _cacheCtor.Add(type, c);
-                    }
 
-                    return c();
+                        return c();
+                    }
                 }
                 catch (Exception)
                 {
@@ -210,7 +213,7 @@ namespace LiteDB
             var getMethod = propertyInfo.GetGetMethod(nonPublic);
             if (getMethod == null) return null;
 
-            var getter = new DynamicMethod("_", typeof (object), new[] {typeof (object)}, type, true);
+            var getter = new DynamicMethod("_", typeof(object), new Type[] { typeof(object) }, type, true);
             var il = getter.GetILGenerator();
 
             if (!type.IsClass) // structs
@@ -235,7 +238,7 @@ namespace LiteDB
 
             il.Emit(OpCodes.Ret);
 
-            return (GenericGetter) getter.CreateDelegate(typeof (GenericGetter));
+            return (GenericGetter)getter.CreateDelegate(typeof(GenericGetter));
         }
 
         private static GenericSetter CreateSetMethod(Type type, PropertyInfo propertyInfo, bool nonPublic)
@@ -245,7 +248,7 @@ namespace LiteDB
 
             if (setMethod == null) return null;
 
-            var setter = new DynamicMethod("_", typeof (object), new[] {typeof (object), typeof (object)}, true);
+            var setter = new DynamicMethod("_", typeof(object), new Type[] { typeof(object), typeof(object) }, true);
             var il = setter.GetILGenerator();
 
             if (!type.IsClass) // structs
@@ -256,8 +259,7 @@ namespace LiteDB
                 il.Emit(OpCodes.Stloc_0);
                 il.Emit(OpCodes.Ldloca_S, lv);
                 il.Emit(OpCodes.Ldarg_1);
-                il.Emit(propertyInfo.PropertyType.IsClass ? OpCodes.Castclass : OpCodes.Unbox_Any,
-                    propertyInfo.PropertyType);
+                il.Emit(propertyInfo.PropertyType.IsClass ? OpCodes.Castclass : OpCodes.Unbox_Any, propertyInfo.PropertyType);
                 il.EmitCall(OpCodes.Call, setMethod, null);
                 il.Emit(OpCodes.Ldloc_0);
                 il.Emit(OpCodes.Box, type);
@@ -267,15 +269,14 @@ namespace LiteDB
                 il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Castclass, propertyInfo.DeclaringType);
                 il.Emit(OpCodes.Ldarg_1);
-                il.Emit(propertyInfo.PropertyType.IsClass ? OpCodes.Castclass : OpCodes.Unbox_Any,
-                    propertyInfo.PropertyType);
+                il.Emit(propertyInfo.PropertyType.IsClass ? OpCodes.Castclass : OpCodes.Unbox_Any, propertyInfo.PropertyType);
                 il.EmitCall(OpCodes.Callvirt, setMethod, null);
                 il.Emit(OpCodes.Ldarg_0);
             }
 
             il.Emit(OpCodes.Ret);
 
-            return (GenericSetter) setter.CreateDelegate(typeof (GenericSetter));
+            return (GenericSetter)setter.CreateDelegate(typeof(GenericSetter));
         }
 
         #endregion IL Code
@@ -286,7 +287,7 @@ namespace LiteDB
         {
             if (!type.IsGenericType) return false;
             var g = type.GetGenericTypeDefinition();
-            return g.Equals(typeof (Nullable<>));
+            return (g.Equals(typeof(Nullable<>)));
         }
 
         public static Type UnderlyingTypeOf(Type type)
@@ -296,13 +297,13 @@ namespace LiteDB
 
         public static Type GetGenericListOfType(Type type)
         {
-            var listType = typeof (List<>);
+            var listType = typeof(List<>);
             return listType.MakeGenericType(type);
         }
 
         public static Type GetGenericDictionaryOfType(Type k, Type v)
         {
-            var listType = typeof (Dictionary<,>);
+            var listType = typeof(Dictionary<,>);
             return listType.MakeGenericType(k, v);
         }
 
@@ -314,27 +315,27 @@ namespace LiteDB
 
             foreach (var i in type.GetInterfaces())
             {
-                if (i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                if (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
                     return i.GetGenericArguments()[0];
                 }
             }
 
-            return typeof (object);
+            return typeof(object);
         }
 
         /// <summary>
-        ///     Returns true if Type is any kind of Array/IList/ICollection/....
+        /// Returns true if Type is any kind of Array/IList/ICollection/....
         /// </summary>
         public static bool IsList(Type type)
         {
             if (type.IsArray) return true;
 
-            foreach (var @interface in type.GetInterfaces())
+            foreach (Type @interface in type.GetInterfaces())
             {
                 if (@interface.IsGenericType)
                 {
-                    if (@interface.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                    if (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                     {
                         // if needed, you can also return the type used as generic argument
                         return true;

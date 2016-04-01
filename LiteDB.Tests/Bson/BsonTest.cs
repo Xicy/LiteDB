@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace LiteDB.Tests
 {
@@ -27,7 +27,7 @@ namespace LiteDB.Tests
             doc["Items"].AsArray.Add(new BsonDocument());
             doc["Items"].AsArray[0].AsDocument["Qtd"] = 3;
             doc["Items"].AsArray[0].AsDocument["Description"] = "Big beer package";
-            doc["Items"].AsArray[0].AsDocument["Unit"] = 10/(double) 3;
+            doc["Items"].AsArray[0].AsDocument["Unit"] = (double)10 / (double)3;
 
             doc["Items"].AsArray.Add("string-one");
             doc["Items"].AsArray.Add(null);
@@ -62,8 +62,7 @@ namespace LiteDB.Tests
             Assert.AreEqual(DateTime.MinValue, doc["minDate"].AsDateTime);
 
             Assert.AreEqual(o["Items"].AsArray.Count, doc["Items"].AsArray.Count);
-            Assert.AreEqual(o["Items"].AsArray[0].AsDocument["Unit"].AsDouble,
-                doc["Items"].AsArray[0].AsDocument["Unit"].AsDouble);
+            Assert.AreEqual(o["Items"].AsArray[0].AsDocument["Unit"].AsDouble, doc["Items"].AsArray[0].AsDocument["Unit"].AsDouble);
             Assert.AreEqual(o["Items"].AsArray[4].AsDateTime.ToString(), doc["Items"].AsArray[4].AsDateTime.ToString());
         }
     }
