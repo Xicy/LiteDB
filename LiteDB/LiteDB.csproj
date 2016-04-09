@@ -38,9 +38,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="System" />
+    <Reference Include="System" />
     <Reference Include="System.Core" />
-  
     <Compile Include="Core\Collections\Aggregate.cs" />
     <Compile Include="Core\Collections\AutoId.cs" />
     <Compile Include="Core\Collections\Stats.cs" />

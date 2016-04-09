@@ -260,10 +260,7 @@ namespace LiteDB
 
         public virtual void Dispose()
         {
-            if (_stream != null)
-            {
-                _stream.Dispose();
-            }
+            _stream?.Dispose();
         }
 
         #endregion Journal file
